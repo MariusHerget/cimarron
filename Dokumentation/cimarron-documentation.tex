@@ -1,0 +1,32 @@
+\documentclass[10pt,a4paper]{book}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[english]{isodate}
+\usepackage[parfill]{parskip}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing,shapes,arrows,positioning}
+\usetikzlibrary{positioning}
+
+\tikzstyle{input} = [coordinate]
+\tikzstyle{output} = [coordinate]
+\tikzstyle{block} = [rectangle, draw, text width=5em, text centered,  minimum height=4em]
+\tikzstyle{storage} = [cylinder, shape border rotate=90, aspect=0.25, draw]
+\begin{document}
+% \maketitle\tableofcontents\newpage
+\pagenumbering{Roman}
+\tableofcontents
+\newpage
+% \listoffigures
+% \newpage
+% \listoftables
+% \newpage
+\pagenumbering{arabic}
+
+\chapter{Planing}
+\section{Idea}
+\section{System diagram}
+\input{includes/planing-system-diagram}
+
+
+\end{document}
