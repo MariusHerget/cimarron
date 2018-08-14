@@ -1,0 +1,42 @@
+\documentclass[10pt,a4paper]{book}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[english]{isodate}
+\usepackage[parfill]{parskip}
+
+
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+
+\usepackage{cleveref}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing,shapes,arrows,positioning}
+\usetikzlibrary{positioning}
+
+\tikzstyle{input} = [coordinate]
+\tikzstyle{output} = [coordinate]
+\tikzstyle{block} = [rectangle, draw, text width=5em, text centered,  minimum height=4em]
+\tikzstyle{storage} = [cylinder, shape border rotate=90, aspect=0.25, draw]
+
+
+\usepackage[\version, layout={inline,index}, singleuser]{fixme}
+% Side characters
+\newcommand{\impmark}{\strut\vadjust{\domark}}
+\newcommand{\domark}{%
+	\vbox to 0pt{
+		\kern-\dp\strutbox
+		\smash{\llap{*\kern1em}}
+		\vss
+	}%
+}
+\newcommand{\impquest}{\strut\vadjust{\doquest}}
+\newcommand{\doquest}{%
+	\vbox to 0pt{
+		\kern-\dp\strutbox
+		\smash{\llap{?\kern2em}}
+		\vss
+	}%
+}
+% Fixme
+\fxsetup{envlayout=plain}

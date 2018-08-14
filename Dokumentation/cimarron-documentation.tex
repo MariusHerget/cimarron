@@ -1,32 +1,54 @@
-\documentclass[10pt,a4paper]{book}
+\newcommand{\pdftitel}{Cimarron Herget 2017}
+\newcommand{\autor}{Marius Herget}
+\newcommand{\version}{draft} % change to "final" to disable comments | "draft" shows notes/tbds/etc
+\newcommand{\isPrintVersion}{true}
 
-\usepackage[utf8]{inputenc}
-\usepackage[english]{babel}
-\usepackage[english]{isodate}
-\usepackage[parfill]{parskip}
-\usepackage{tikz}
-\usetikzlibrary{decorations.pathreplacing,shapes,arrows,positioning}
-\usetikzlibrary{positioning}
+\input{.TEX/header}
 
-\tikzstyle{input} = [coordinate]
-\tikzstyle{output} = [coordinate]
-\tikzstyle{block} = [rectangle, draw, text width=5em, text centered,  minimum height=4em]
-\tikzstyle{storage} = [cylinder, shape border rotate=90, aspect=0.25, draw]
 \begin{document}
+% TBD
+\newcommand{\tbd}[1][null]{
+    \ifthenelse{\equal{#1}{null}}
+    {\ignorespaces\textit{\impmark\color{orange}\textbf{TBD}}}
+    {\ignorespaces\textit{\impmark\color{orange}[TBD: #1]}}
+}
+\newcommand{\todo}[1][null]{
+    \ifthenelse{\equal{#1}{null}}
+    {\ignorespaces\textit{\impmark\color{orange}\textbf{TBD}}}
+    {\ignorespaces\textit{\impmark\color{orange}[TBD: #1]}}
+}
+
+
+
 % \maketitle\tableofcontents\newpage
 \pagenumbering{Roman}
+\title{\textbf{Cimarron}\\Stabilisation of videos in modern \texttt{C++}}
+\date{\today}
+\author{    Marius Herget\\[2em]
+            {\small Practical Course}\\
+            \textbf{Advanced Software Development with Modern \texttt{C++}}\\
+            \textit{Summer Term 2018}\\[2em]
+            \textit{Institute for Computer Science}\\
+            \textit{Ludwig-Maximilians-Universit\"at M\"unchen}\\[3em]
+            \includegraphics[scale=0.5]{lmu-siegel}}
+% (feature abused for this document to repeat the title also on left hand pages)
+\maketitle
+% \newpage
 \tableofcontents
 \newpage
 % \listoffigures
 % \newpage
 % \listoftables
-% \newpage
 \pagenumbering{arabic}
 
 \chapter{Planing}
 \section{Idea}
 \section{System diagram}
 \input{includes/planing-system-diagram}
+\section{Practical evaluation}
+\input{includes/frameworkevaluation}
+
+
 
 
 \end{document}
