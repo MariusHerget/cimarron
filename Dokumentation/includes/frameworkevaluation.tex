@@ -4,15 +4,93 @@ This section starts with an describtion of the scoring criterias which will be u
 The overall goal of this work is to develop a \texttt{C++} driven software video stabilisation. Therefore, the following criteria are the basis to evaluate the perfect \texttt{C++} framework with all needed features to extract, analyse and manipulate videos.
 
 \begin{description}
-    \item[Videocodecs] The framework needs to be able to handle basic codecs. In detail these are \tbd
-    \item[Extracting frames \textit{Decoding}] One basic feature of a suitable framework is the extraction of every frame to process it further.
-    \item[Edge detection] One approach to the problem is to recognize edges and to track their movement. Therefore, a suitable framework needs to be able to extract edges and to present them in an efficent way.
-    \item[Manipulation of frames] A suitable framework needs to be able to transform, rotate and warp frames.
-    \item[Tracking] An non-necessary but useful feature is the object tracking. These objects could be used to stabilize videos around an important object.
-    % \item[]
-    \item[Merge frames \textit{Encoding}] Another basic feature of a suitable framework is to merge the manipulated frames back into an video.
+    \item[Videocodecs] The framework needs to be able to handle basic codecs. In detail these are \tbd. This is only a gateway criterium.
+    \item[Extracting frames \textit{Decoding}] One basic feature of a suitable framework is the extraction of every frame to process it further. The easier and efficent it is, the higher is the score.
+    \item[Edge detection] One approach to the problem is to recognize edges and to track their movement. Therefore, a suitable framework needs to be able to extract edges and to present them in an efficent way. This is only a gateway criterium. \tbd[Score]
+    \item[Manipulation of frames] A suitable framework needs to be able to transform, rotate and warp frames. The more methods to manipulate the frames are available, the better is the score.
+    \item[Tracking] An non-necessary but useful feature is the object tracking. These objects could be used to stabilize videos around an important object. This is just an decision helper, if two or more gateways have similiar scores.
+    \item[Merge frames \textit{Encoding}] Another basic feature of a suitable framework is to merge the manipulated frames back into an video. This is only a gateway criterium.
+    \item[License] For puplication and eventuall professional usage the \textit{license} is major fact as well. A free, open framework is favored.
+    \item[Technical environment] This criterium considers the current state of the framework. If the technical dependencies in hard- or software are low the score is better. This includes hardware, operating system or other framework dependencies. Moreover, the ongoing amount of known bugs is also covered. Furthermore, it is scored whether the codes main goals are consistent.
+    \item[Performance] This criterium considers a good framework to have a fast response time. This includes an efficent implementation and in the best case the use of modern \texttt{C++14} standard. Performance boosters like GPU support or special hardware lead to a higher score, as long as this does not interfere with a normal use or sets any limitations.
+    \item[Confidence] This criterium considers a good structure to be under the patronage of a admired company, an internationally respected university or based on an active open-source community with more than $1000$ participants. In all cases, the project should be financed for the next few years. The internal calculations of each framework are rated on the present documentation, their developers, and publications. Another observable factor in this criterium is the overall usage of the code. If it is adopted by big companies and has a large community with help forums, tutorials or regular mailing lists, it is scored higher. This is important to since only a long-term, scientifically proved framework should be used to receive a steady and well usable applicaion.
 \end{description}
 
 \subsection{Frameworks}\label{sec:frameworks}
+In the following, there is a quick overview of various frameworks with short descriptions (in alphabetical order).
+\begin{description}
+    \item[CImg]
+    \item[FFmpeg]
+    \item[GStreamer]
+    \item[OpenCV]
+    \item[Video++]
+\end{description}
 \subsection{Evaluation}\label{sec:evaluation}
+\newcommand{\lc}[2]{
+  {\scriptsize #1}\hfill\textit{\tiny$#2\%$} \newline
+}
+\newcommand{\lr}[1]{
+  \textit{\scriptsize#1} \newline
+}
+\newcommand{\lt}[1]{
+  \textbf{#1}
+}
+\newcommand{\lth}[1] {
+  {#1}
+}
+\begin{table}[H]\centering \
+  \def\arraystretch{0.8}%  1 is the default
+  \setlength\tabcolsep{4.5pt}% default value: 6pt
+    \begin{tabularx}{1\textwidth}{p{2.75cm}|X|X|X|X|X|X} % checktex 5
+      %                   & Caffe         & Caffe2        & Keras           & Scikit-Learn  & TensorFlow      & Theano
+      ~                   & \lth{\fwone}  &\lth{\fwtwo}   &\lth{\fwfour}    &\lth{\fwsix}    &\lth{Tensor-Flow}  &\lth{\fweight} \\ \hline % checktex ##
+      \lc{Language}{10}
+      \lc{Releases}{40}
+      \lc{Documentation}{50}
+      \textbf{\fwcritone}   & \lr{7.5}\lr{5}\lr{9.5}\lt{\fwonescone} & \lr{7.5}\lr{9}\lr{9.5}\lt{\fwtwoscone}   &  \lr{\underline{0}}\lr{9}\lr{8}\lt{\fwfourscone}
+      & \lr{6}\lr{5}\lr{9}\lt{\fwsixscone}   & \lr{9}\lr{9.5}\lr{8.5}\lt{\fwsevenscone}   & \lr{6}\lr{7}\lr{7}\lt{\fweightscone} \\\hline
+      %
+      % \lc{Patronage}{50}
+      % \lc{Future}{20}
+      % \lc{Usage}{30}
+      % \textbf{\fwcrittwo}
+      %
+      % & \lr{6}\lr{6}\lr{9.5}\lt{\fwonesctwo}
+      % & \lr{9}\lr{8}\lr{8}\lt{\fwtwosctwo}
+      % & \lr{1}\lr{3}\lr{3}\lt{\fwfoursctwo}
+      % & \lr{8}\lr{9}\lr{10}\lt{\fwsixsctwo}
+      % & \lr{10}\lr{9}\lr{10}\lt{\fwsevensctwo}  \\\hline
+      % \lc{Test coverage}{40}
+      %   \lc{Guidelines}{60}
+      %   \textbf{\fwcritthree}
+      % & \lr{10}\lr{10}\lt{\fwonescthree}
+      % & \lr{5}\lr{8}\lt{\fwtwoscthree}
+      % & \lr{5}\lr{9}\lt{\fwfourscthree}
+      % & \lr{10}\lr{9}\lt{\fwsixscthree}
+      % & \lr{8}\lr{9}\lt{\fwsevenscthree}
+      % & \lr{5}\lr{5}\lt{\fweightscthree}  \\\hline
+      %
+      \textbf{\fwcritfour}   & \lt{\fwonescfour}  & \lt{\fwtwoscfour}  & \lt{\fwfourscfour}   & \lt{\fwsixscfour}  & \lt{\fwsevenscfour}  & \lt{\fweightscfour}  \\\hline
+      %
+      \lc{Dependencies}{50}
+      \lc{Known bugs}{30}
+      \lc{Code goals}{20}
+      \textbf{\fwcritfive}   & \lr{8}\lr{7.5}\lr{8}\lt{\fwonescfive}   & \lr{9}\lr{6}\lr{8}\lt{\fwtwoscfive}   & \lr{5}\lr{1}\lr{7}\lt{\fwfourscfive}
+      & \lr{7.5}\lr{8}\lr{9}\lt{\fwsixscfive}   & \lr{9.5}\lr{8.5}\lr{8}\lt{\fwsevenscfive}   & \lr{8}\lr{8}\lr{8}\lt{\fweightscfive}  \\\hline
+      %
+      \lc{Activations ftk.}{35}
+      \lc{Neural networks}{60}
+      \lc{Rest}{5}
+      \textbf{\fwcritsix}   & \lr{8}\lr{7}\lr{10}\lt{\fwonescsix}   & \lr{7.5}\lr{8.5}\lr{5}\lt{\fwtwoscsix}   & \lr{7}\lr{5}\lr{9}\lt{\fwfourscsix}
+      & \lr{9.5}\lr{9.5}\lr{8}\lt{\fwsixscsix}   & \lr{8}\lr{8}\lr{7.5}\lt{\fwsevenscsix}   & \lr{7}\lr{7}\lr{6.5}\lt{\fweightscsix}  \\\hline
+      %
+      \lc{Creation}{15}
+      \lc{Real-time}{60}
+      \lc{Booster}{25}
+      \textbf{\fwcritseven}   & \lr{9}\lr{9}\lr{10}\lt{\fwonescseven}   & \lr{7}\lr{8}\lr{8}\lt{\fwtwoscseven}   & \lr{7}\lr{7}\lr{7}\lt{\fwfourscseven}
+      & \lr{8}\lr{9}\lr{2}\lt{\fwsixscseven}   & \lr{9}\lr{8}\lr{9.25}\lt{\fwsevenscseven}   & \lr{8}\lr{7.5}\lr{5}\lt{\fweightscseven} \\ \hline\hline
+      \textbf{Final Score}  & \lt{\fwoneFINAL} & \lt{\fwtwoFINAL} & \lt{\fwfourFINAL} & \lt{\fwsixFINAL} & \lt{\fwsevenFINAL} & \lt{\fweightFINAL}
+    \end{tabularx}
+    \caption{Scoring of the evaluated frameworks}\label{tbl:evaluation:scores}
+\end{table}
 \subsection{Decision}\label{sec:decision}
