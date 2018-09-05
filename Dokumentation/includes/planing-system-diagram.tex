@@ -12,9 +12,10 @@
     \node [storage, below right=0.5cm and 0.7cm of analysis] (analysisstorage) {DB};
 
      \draw[->](input) -- node {Video}(pre);
-     \draw[->](pre) -- node {Frames}(analysis);
-     \draw[->](analysis) -- node {Frames}(stabi);
-     \draw[->](analysis) -- node {Metadata}(analysisstorage);
+     \draw[->]([yshift=0.4cm]pre) -- node {Rawframes}(analysis);
+     \draw[->]([yshift=-0.4cm]pre) -- node[below]{Binarydata}(analysis);
+     \draw[->](analysis) -- node {RawFrames}(stabi);
+     \draw[->](analysis) -- node {\tiny Correctiondata}(analysisstorage);
      \draw[->](analysisstorage) -- node {}(stabi);
      \draw[->](stabi) |- node {Frames}(post);
      \draw[->](post) -- node {Video}(output);
@@ -24,23 +25,61 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LOWER LEVEL SD %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Preprocessing  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{figure}[h!]
 % \centered
 \small
-\begin{tikzpicture}[node distance=1cm and 2cm,auto]
+\begin{tikzpicture}[node distance=1cm and 2cm,framed,background rectangle/.style={dotted,thick,draw=gray,rounded corners},auto]
     \node [input, name=input] {};
-    \node [block, right= of input] (first) {Pre-processing};
-    \node [block, below= of first] (last) {Pre-processing};
-    \node [input, left=of last] (output) {t};
+    \node [block, right= of input] (extract) {Extraction of single frames};
+    \node [block, right= of extract] (color) {Color handling};
+    \node [block, below= of color] (binary) {Binary conversion};
+    \node [input, below= 2.275cm of input] (output) {t};
 
     % \node [storage, below right=0.5cm and 0.7cm of analysis] (analysisstorage) {DB};
 
-     \draw[->](input) -- node {Video}(first);
-     \draw[->](first) -- node {Frames}(analysis);
+     \draw[->](input) -- node {Video}(extract);
+     \draw[->](extract) -- node {Rawframes}(color);
+     \draw[->](color) -- node {Frames}(binary);
 
-     \draw[->](last) -- node {Frames}(output);
+     \draw[->](extract) |- ++(0,1cm) -- ++(8cm,0) |- ++(0,-4.1cm) -- node[below]{Rawframes} ++(-11cm,0);
+
+     \draw[->](binary) -- node {Binarydata}(output);
 \end{tikzpicture}
 \caption{Detailed system diagram of the \textit{Preprocessing}}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Analysis %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure}[h!]
+% \centered
+\small
+\begin{tikzpicture}[node distance=1cm and 2cm,framed,background rectangle/.style={dotted,thick,draw=gray,rounded corners},auto]
+    \node [input, name=input] {};
+    \node [block, right= of input] (local) {Local Motion Estimation};
+    \node [block, below right= of input] (global) {Global Motion Estimation};
+    \node [block, right= of local] (motionsmootinglocal) {Motion smoothing};
+    \node [block, right= of global] (motionsmootingglobal) {Motion smoothing};
+    \node [block, right= of motionsmootinglocal] (aggr) {Aggregation};
+    \node [input, below left=of global] (output) {t};
+
+    % \node [storage, below right=0.5cm and 0.7cm of analysis] (analysisstorage) {DB};
+
+     % \draw[->](input) --  ++(0.5cm,-0.2cm) -| node[midway left]{Frames} ++(1cm,-1.9cm) --  (output);
+     \draw[->](input) -- node{Binarydata}(local);
+     \draw[->](input) -- node[below left]{Binarydata}(global);
+     \draw[->](local) -- node[above]{\scriptsize Correctiondata}(motionsmootinglocal);
+     \draw[->](global) -- node[below]{\scriptsize Correctiondata}(motionsmootingglobal);
+     \draw[->](motionsmootinglocal) -- node[above]{\scriptsize Correctiondata}(aggr);
+     \draw[->](motionsmootingglobal) -- node[below right]{\scriptsize Correctiondata}(aggr);
+
+     \draw[->](aggr) |- node[above left]{Correctiondata}(output);
+
+     \draw[->](input) |-  ++(0,1cm) -- ++(12cm,0) |- ++(0,-4.5cm) -- node[below]{Rawframes} ++(-12cm,0);
+\end{tikzpicture}
+\caption{Detailed system diagram of the \textit{Analysis}}
 \end{figure}
