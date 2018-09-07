@@ -33,7 +33,7 @@
 \small
 \begin{tikzpicture}[node distance=1cm and 2cm,framed,background rectangle/.style={dotted,thick,draw=gray,rounded corners},auto]
     \node [input, name=input] {};
-    \node [block, right= of input] (extract) {Extraction of single frames};
+    \node [block, right= of input] (extract) {Extraction of single frames \textit{\small \color{gray} Decoding}};
     \node [block, right= of extract] (color) {Color handling};
     \node [block, below= of color] (binary) {Binary conversion};
     \node [input, below= 2.275cm of input] (output) {t};
@@ -61,9 +61,9 @@
 \begin{tikzpicture}[node distance=1cm and 2cm,framed,background rectangle/.style={dotted,thick,draw=gray,rounded corners},auto]
     \node [input, name=input] {};
     \node [block, right= of input] (local) {Local Motion Estimation};
-    \node [block, below right= of input] (global) {Global Motion Estimation};
+    \node [block, below right= of input, color=gray, dotted] (global) {Global Motion Estimation};
     \node [block, right= of local] (motionsmootinglocal) {Motion smoothing};
-    \node [block, right= of global] (motionsmootingglobal) {Motion smoothing};
+    \node [block, right= of global, color=gray, dotted] (motionsmootingglobal) {Motion smoothing};
     \node [block, right= of motionsmootinglocal] (aggr) {Aggregation};
     \node [input, below left=of global] (output) {t};
 
@@ -71,11 +71,11 @@
 
      % \draw[->](input) --  ++(0.5cm,-0.2cm) -| node[midway left]{Frames} ++(1cm,-1.9cm) --  (output);
      \draw[->](input) -- node{Binarydata}(local);
-     \draw[->](input) -- node[below left]{Binarydata}(global);
+     \draw[->, color=gray](input) -- node[below left]{Binarydata}(global);
      \draw[->](local) -- node[above]{\scriptsize Correctiondata}(motionsmootinglocal);
-     \draw[->](global) -- node[below]{\scriptsize Correctiondata}(motionsmootingglobal);
+     \draw[->, color=gray](global) -- node[below]{\scriptsize Correctiondata}(motionsmootingglobal);
      \draw[->](motionsmootinglocal) -- node[above]{\scriptsize Correctiondata}(aggr);
-     \draw[->](motionsmootingglobal) -- node[below right]{\scriptsize Correctiondata}(aggr);
+     \draw[->, color=gray](motionsmootingglobal) -- node[below right]{\scriptsize Correctiondata}(aggr);
 
      \draw[->](aggr) |- node[above left]{Correctiondata}(output);
 
@@ -83,3 +83,65 @@
 \end{tikzpicture}
 \caption{Detailed system diagram of the \textit{Analysis}}
 \end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Stabilization %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure}[h!]
+% \centered
+\small
+\begin{tikzpicture}[node distance=1cm and 2cm,framed,background rectangle/.style={dotted,thick,draw=gray,rounded corners},auto]
+    \node [input, name=input] {};
+    \node [block, right= of input] (transform) {Transform Rawframes};
+    \node [input, name=output, right= of transform] {};
+
+    % \node [storage, below right=0.5cm and 0.7cm of analysis] (analysisstorage) {DB};
+    \draw[->]([yshift=0.1cm]input) -- node {Rawframes}(transform);
+    \draw[->]([yshift=-0.1cm]input) -- node[below]{\scriptsize Correctiondata}(transform);
+    \draw[->](transform) -- node[]{Frames}(output);
+
+
+     % \draw[->](input) --  ++(0.5cm,-0.2cm) -| node[midway left]{Frames} ++(1cm,-1.9cm) --  (output);
+\end{tikzpicture}
+\caption{Detailed system diagram of the \textit{Stabilization}}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Postprocessing %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure}[h!]
+% \centered
+\small
+\begin{tikzpicture}[node distance=1cm and 2cm,framed,background rectangle/.style={dotted,thick,draw=gray,rounded corners},auto]
+    \node [input, name=input] {};
+    \node [block, right= of input] (enc) {Encoding};
+    \node [input, name=output, right= of enc] {};
+
+    % \node [storage, below right=0.5cm and 0.7cm of analysis] (analysisstorage) {DB};
+    \draw[->](input) -- node[]{Frames}(enc);
+    \draw[->](enc) -- node[]{Video}(output);
+
+
+     % \draw[->](input) --  ++(0.5cm,-0.2cm) -| node[midway left]{Frames} ++(1cm,-1.9cm) --  (output);
+\end{tikzpicture}
+\caption{Detailed system diagram of the \textit{Postprocessing}}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Resulting %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{tikzpicture}
+%    \node (a) at (0,0)
+%      {
+%         \begin{tikzpicture}
+%            \draw (0,0) circle (1cm);
+%         \end{tikzpicture}
+%      };
+%     \node (b) at (a.south) [anchor=north,yshift=-1cm]
+%      {
+%         \tikz\fill[blue] (0,0) circle (0.7cm);
+%      };
+%    \draw [<->] (a)--(b);
+% \end{tikzpicture}
