@@ -2,6 +2,7 @@ using namespace iod;
 using namespace vpp;
 using namespace s;
 
+#include "../helper/filesystem.h"
 #include "../helper/types.h"
 
 namespace cimarron {
@@ -13,6 +14,9 @@ public:
   extractFrames(clc_str _videocstr) : videocstr(_videocstr){};
 
   void exportToPPM(std::string baseDir) {
+    cimarron::fs::createDir(baseDir);
+    cimarron::fs::createDir(baseDir + "raw/");
+    cimarron::fs::createDir(baseDir + "graylevel/");
     int nframes = 0;
     int us_cpt = 0;
     foreach_videoframe(videocstr) | [&](const image2d<vuchar3> &frame_cv) {
@@ -21,17 +25,25 @@ public:
       auto frame_graylevel = rgb_to_graylevel<unsigned char>(frame);
       timer t;
       t.start();
-      // Export Frame to tmp
+      // Export Frame to tmp raw
       std::string name(baseDir);
+      name.append("raw/");
       name.append(std::to_string(nframes));
       name.append(".ppm");
       cv::imwrite(name, to_opencv(frame));
+
+      // Export Frame to tmp gray
+      std::string namegray(baseDir);
+      namegray.append("graylevel/");
+      namegray.append(std::to_string(nframes));
+      namegray.append(".jpg");
+      cv::imwrite(namegray, to_opencv(frame_graylevel));
       t.end();
 
       us_cpt += t.us();
       if (!(nframes % 5)) {
         std::cout
-            << "(Frame: " << nframes << " / " //<< totalFrame
+            << "(Frame: " << nframes //<< " / " //<< totalFrame
             << ") Tracker time: " << (us_cpt / 1000000.f)
             << " ms/frame. " // << ctx.trajectories.size() << " particles."
             << std::endl;

@@ -17,7 +17,7 @@ public:
     int totalFrame = countFrames();
     // std::cout << totalFrame << " == " << opts.record_video.size() <<
     // std::endl;
-    ef.exportToPPM("./tmp/rawframes/");
+    ef.exportToPPM("./tmp/");
   };
 
 private:

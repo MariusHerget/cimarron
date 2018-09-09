@@ -17,13 +17,17 @@ set(LIBS
 	        ${OPENGL_gl_LIBRARY}
 	        ${OPENGL_glu_LIBRARY}
           ${QT_LIBRARIES})
+find_package(Boost 1.55.0 REQUIRED COMPONENTS system filesystem)
+include_directories(${Boost_INCLUDE_DIRS})
 
-link_directories(${THIRDPARTY}/lib)
+
+
+link_directories(${THIRDPARTY}/lib ${Boost_LIBRARY_DIRS})
 
 add_definitions(-std=c++1y -g)
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -march=native -fopenmp -DNDEBUG")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -march=native -fopenmp -DNDEBUG -lboost_system")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O1 -march=native")
 
 
 add_executable(cimarron cimarron-main.cc)
-target_link_libraries(cimarron ${OpenCV_LIBS} ${LIBS})
+target_link_libraries(cimarron ${OpenCV_LIBS} ${LIBS} ${Boost_LIBRARIES})
