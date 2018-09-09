@@ -26,5 +26,5 @@ int main(int argc, const char *argv[]) {
 
   bool first = true;
 
-  cimarron::preprocessing pre(opts.video.c_str());
+  cimarron::pre::preprocessing pre(opts.video.c_str());
 }

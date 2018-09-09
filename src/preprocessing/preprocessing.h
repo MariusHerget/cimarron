@@ -7,6 +7,7 @@ using namespace s;
 #include "../helper/types.h"
 
 namespace cimarron {
+namespace pre {
 class preprocessing {
 private:
   clc_str videocstr;
@@ -23,4 +24,5 @@ public:
 private:
   int countFrames(int totalFrame = 0) { return totalFrame + frames.size(); };
 };
+} // namespace pre
 } // namespace cimarron

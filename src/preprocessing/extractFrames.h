@@ -7,6 +7,7 @@ using namespace s;
 #include "../helper/types.h"
 
 namespace cimarron {
+namespace pre {
 class extractFrames {
 private:
   clc_str videocstr;
@@ -22,9 +23,9 @@ public:
   }
 
   void exportToPPM(std::string baseDir) {
-    cimarron::fs::createDir(baseDir);
-    cimarron::fs::createDir(baseDir + "raw/");
-    cimarron::fs::createDir(baseDir + "graylevel/");
+    cimarron::helper::createDir(baseDir);
+    cimarron::helper::createDir(baseDir + "raw/");
+    cimarron::helper::createDir(baseDir + "graylevel/");
     int nframes = 0;
     int us_cpt = 0;
     foreach_videoframe(videocstr) | [&](const image2d<vuchar3> &frame_cv) {
@@ -64,4 +65,5 @@ public:
   };
 };
 
+} // namespace pre
 } // namespace cimarron

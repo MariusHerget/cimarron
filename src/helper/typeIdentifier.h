@@ -7,6 +7,8 @@
 #include <memory>
 #include <string>
 
+namespace cimarron {
+namespace helper {
 template <class T> std::string type_name() {
   typedef typename std::remove_reference<T>::type TR;
   std::unique_ptr<char, void (*)(void *)> own(
@@ -27,3 +29,6 @@ template <class T> std::string type_name() {
     r += "&&";
   return r;
 }
+
+} // namespace helper
+} // namespace cimarron
