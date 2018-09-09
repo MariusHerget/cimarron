@@ -3,6 +3,7 @@ using namespace vpp;
 using namespace s;
 
 #include "../helper/filesystem.h"
+#include "../helper/typeIdentifier.h"
 #include "../helper/types.h"
 
 namespace cimarron {
@@ -13,6 +14,13 @@ private:
 public:
   extractFrames(clc_str _videocstr) : videocstr(_videocstr){};
 
+  decltype(auto) getFrames() {
+    framevector frames;
+    foreach_videoframe(videocstr) |
+        [&](const image2d<vuchar3> &frame_cv) { frames.push_back(frame_cv); };
+    return frames;
+  }
+
   void exportToPPM(std::string baseDir) {
     cimarron::fs::createDir(baseDir);
     cimarron::fs::createDir(baseDir + "raw/");
@@ -21,6 +29,8 @@ public:
     int us_cpt = 0;
     foreach_videoframe(videocstr) | [&](const image2d<vuchar3> &frame_cv) {
       auto frame = clone(frame_cv, _border = 3);
+      // std::cout << "frame_cv is " << type_name<decltype(frame_cv)>() << '\n';
+      // std::cout << "frame is " << type_name<decltype(frame)>() << '\n';
       fill_border_mirror(frame);
       auto frame_graylevel = rgb_to_graylevel<unsigned char>(frame);
       timer t;
@@ -53,4 +63,5 @@ public:
     };
   };
 };
+
 } // namespace cimarron

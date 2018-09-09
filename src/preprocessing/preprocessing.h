@@ -10,21 +10,17 @@ namespace cimarron {
 class preprocessing {
 private:
   clc_str videocstr;
+  framevector frames;
 
 public:
   preprocessing(clc_str _videocstr) : videocstr(_videocstr) {
     extractFrames ef(videocstr);
-    int totalFrame = countFrames();
-    // std::cout << totalFrame << " == " << opts.record_video.size() <<
-    // std::endl;
+    frames = ef.getFrames();
+    std::cout << "Framevector: " << countFrames() << std::endl;
     ef.exportToPPM("./tmp/");
   };
 
 private:
-  int countFrames(int totalFrame = 0) {
-    foreach_videoframe(videocstr) |
-        [&](const image2d<vuchar3> &frame_cv) { totalFrame++; };
-    return totalFrame;
-  };
+  int countFrames(int totalFrame = 0) { return totalFrame + frames.size(); };
 };
 } // namespace cimarron
