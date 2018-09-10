@@ -5,6 +5,7 @@ using namespace iod;
 using namespace vpp;
 using namespace s;
 
+#include "../helper/printer.h"
 #include "../helper/types.h"
 
 namespace cimarron {
@@ -15,11 +16,12 @@ private:
   int boxSize = 10;
 
 public:
-  analysis(framevector _frames)
-      : frames(_frames){
-            // localMotionEstimation lme(frames);
-            // auto localcorrection = lme.estimateBlockWise(boxSize);
-        };
+  analysis(framevector _frames) : frames(_frames) {
+    // cimarron::print::Framevector(frames);
+    localMotionEstimation lme(frames);
+    auto localcorrection = lme.estimateBlockWise(boxSize);
+    cimarron::print::CorrectionData(localcorrection);
+  };
 
 private:
 };
