@@ -35,3 +35,9 @@ Every step tested, whole prudct not.
 - Local Motion estimation genau definieren
 - Usecase und daraus infos in SD
 - Studiprohjekt Sachen rausnehmen
+
+# Drittes Meeting 10.09.2018
+Fragen:
+  - V++ foreach_videoframe(videocstr) bereits die framesdata?
+    - Color handling on the go
+    - 
