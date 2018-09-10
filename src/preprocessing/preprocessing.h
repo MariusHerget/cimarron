@@ -21,6 +21,8 @@ public:
     ef.exportToPPM("./tmp/");
   };
 
+  decltype(auto) getFrameVector() { return frames; }
+
 private:
   int countFrames(int totalFrame = 0) { return totalFrame + frames.size(); };
 };
