@@ -25,8 +25,6 @@ int main(int argc, const char *argv[]) {
       cl::required(_video), _video = std::string(), _detector_th = int(10),
       _keypoint_spacing = int(5), _record_video = std::string());
 
-  bool first = true;
-
   cimarron::pre::preprocessing pre(opts.video.c_str());
   auto frames = pre.getFrameVector();
   cimarron::analysis::analysis ana(frames);

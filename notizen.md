@@ -40,4 +40,16 @@ Every step tested, whole prudct not.
 Fragen:
   - V++ foreach_videoframe(videocstr) bereits die framesdata?
     - Color handling on the go
-    - 
+  - IO und Logik trennen nächster schritt, Modellierung SD komplette verarbeotungskette ()
+  - Konzept enwitklcing (was muss was können und was brauch ich)
+  - export über io << >> iomodifer iomanlib
+  - png/bild format als modifer io
+
+- vektor(x,y) und winkel getrennt
+- Kategorie 1: Wie ensteht eint delta zwsichen zwei frame
+- Kategorie 2: Instabilität, Rotation & Translation
+
+PROZESSMODEL
+System und beschränkungen klar rausschreiben
+
+Verfahrne -> Konzepte (Modellierung)
