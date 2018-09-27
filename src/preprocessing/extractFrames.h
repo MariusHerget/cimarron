@@ -17,8 +17,9 @@ public:
 
   decltype(auto) getFrames() {
     framevector frames;
-    foreach_videoframe(videocstr) |
-        [&](const image2d<vuchar3> &frame_cv) { frames.push_back(frame_cv); };
+    foreach_videoframe(videocstr) | [&](const image2d<vuchar3> &frame_cv) {
+      frames.push_back(clone(frame_cv, _border = 3));
+    };
     return frames;
   }
 

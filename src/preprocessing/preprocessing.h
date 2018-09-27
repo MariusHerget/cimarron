@@ -18,7 +18,7 @@ public:
     extractFrames ef(videocstr);
     frames = ef.getFrames();
     std::cout << "Framevector: " << countFrames() << std::endl;
-    ef.exportToPPM("./tmp/");
+    // ef.exportToPPM("./tmp/");
   };
 
   decltype(auto) getFrameVector() { return frames; }

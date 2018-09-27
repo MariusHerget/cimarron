@@ -12,6 +12,7 @@
 
 #include "analysis/analysis.h"
 #include "helper/types.h"
+#include "postprocessing/video_output.h"
 #include "preprocessing/preprocessing.h"
 #include "test/symbols.hh"
 
@@ -27,5 +28,7 @@ int main(int argc, const char *argv[]) {
 
   cimarron::pre::preprocessing pre(opts.video.c_str());
   auto frames = pre.getFrameVector();
-  cimarron::analysis::analysis ana(frames);
+  cimarron::post::video_output vo;
+  vo << frames;
+  // cimarron::analysis::analysis ana(frames);
 }
