@@ -34,14 +34,14 @@ struct TV {
   const int index;
 };
 
-struct correctionVector {
+struct motionVector {
   std::vector<TV> trackingVectors;
   int frameindex;
 
-  correctionVector(std::vector<TV> _trackingVectors, int _frameindex)
+  motionVector(std::vector<TV> _trackingVectors, int _frameindex)
       : trackingVectors(_trackingVectors), frameindex(_frameindex) {}
 };
 
-using correctionData = std::vector<correctionVector>;
+using motionData = std::vector<motionVector>;
 
 #endif

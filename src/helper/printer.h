@@ -13,17 +13,17 @@ void Framevector(framevector frames) {
     std::cout << i.has_data() << ' ';
   std::cout << std::endl;
 }
-void Coordinates(coordinates c) {
-  std::cout << "(" << c.x << "/" << c.y << ")";
-}
-void CorrectionData(correctionData cd) {
-  std::cout << "CorrectionData (" << cd.size() << "): ";
-  for (auto c : cd) {
-    // cimarron::print::Coordinates(c);
-    std::cout << " ";
-  }
-  std::cout << std::endl;
-}
+// void Coordinates(coordinates c) {
+//   std::cout << "(" << c.x << "/" << c.y << ")";
+// }
+// void CorrectionData(correctionData cd) {
+//   std::cout << "CorrectionData (" << cd.size() << "): ";
+//   for (auto c : cd) {
+//     // cimarron::print::Coordinates(c);
+//     std::cout << " ";
+//   }
+//   std::cout << std::endl;
+// }
 } // namespace print
 } // namespace cimarron
 #endif

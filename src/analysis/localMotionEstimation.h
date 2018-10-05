@@ -40,8 +40,8 @@ public:
     std::cout << "trackingAreas: " << trackingAreas.size() << std::endl;
   };
 
-  correctionData estimateBlockWise(int boxSize) {
-    correctionData cd;
+  motionData estimateBlockWise(int boxSize) {
+    motionData md;
 
     int n = 0;
     for (auto rec : trackingAreas) {
@@ -53,12 +53,12 @@ public:
 
     int fnumber = 0;
     for (frame f : frames) {
-      auto frameCD = imageMotionEstimationBlock(f, boxSize, fnumber);
-      cd.push_back(frameCD);
+      auto frameMD = imageMotionEstimationBlock(f, boxSize, fnumber);
+      md.push_back(frameMD);
       auto imagec = clone(f, _border = 0);
       fill_border_mirror(imagec);
       auto image = to_opencv(imagec);
-      for (auto blockTV : frameCD.trackingVectors) {
+      for (auto blockTV : frameMD.trackingVectors) {
         // Draw tracking areas.
         cv::Point2f vertices2f[4];
         blockTV.trackingVector.points(vertices2f);
@@ -70,15 +70,15 @@ public:
         cv::rectangle(image, blockTV.trackingVector.boundingRect(),
                       cv::Scalar(255, 0, 0), 2);
       }
-      if (cd.size() > 1)
-        for (int i = 1; i < cd.size(); i++)
-          for (int o = 0; o < cd[i].trackingVectors.size(); o++)
+      if (md.size() > 1)
+        for (int i = 1; i < md.size(); i++)
+          for (int o = 0; o < md[i].trackingVectors.size(); o++)
             cv::line(
                 image,
-                cv::Point(cd[i].trackingVectors[o].trackingVector.center.x,
-                          cd[i].trackingVectors[o].trackingVector.center.y),
-                cv::Point(cd[i - 1].trackingVectors[o].trackingVector.center.x,
-                          cd[i - 1].trackingVectors[o].trackingVector.center.y),
+                cv::Point(md[i].trackingVectors[o].trackingVector.center.x,
+                          md[i].trackingVectors[o].trackingVector.center.y),
+                cv::Point(md[i - 1].trackingVectors[o].trackingVector.center.x,
+                          md[i - 1].trackingVectors[o].trackingVector.center.y),
                 cv::Scalar(255, 255, 255), 1);
 
       cv::imshow("Tracking Areas", image);
@@ -86,12 +86,11 @@ public:
       fnumber++;
     }
     // return std::vector<int, int, int>(0, 0, 0);
-    return cd;
+    return md;
   }
 
 private:
-  correctionVector imageMotionEstimationBlock(frame f, int boxSize,
-                                              int fnumber) {
+  motionVector imageMotionEstimationBlock(frame f, int boxSize, int fnumber) {
     // copy and set current Frame
     auto image = clone(f, _border = 0);
     fill_border_mirror(image);
@@ -108,7 +107,7 @@ private:
           TV{tracker.track(), tracker.getTrackingRect(), tracker.getIndex()});
     }
 
-    return correctionVector(retTV, fnumber);
+    return motionVector(retTV, fnumber);
   }
 }; // namespace analysis
 } // namespace analysis
