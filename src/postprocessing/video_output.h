@@ -11,22 +11,28 @@ using namespace s;
 
 namespace cimarron {
 namespace post {
-class video_output : public std::istream {
+class video_output {
 private:
   framevector videocstr;
   cv::VideoWriter output_video;
+  std::string filename;
 
 public:
   video_output() = default;
   video_output(framevector _videocstr) : videocstr(_videocstr){};
+  video_output(std::string _file) : filename(_file){};
 
   // video_output &operator<<(String file) { safeToVideoFile(videocstr, file); }
 
   video_output &operator<<(framevector _videocstr) {
-    safeToVideoFile(_videocstr, "./tmp/output.avi");
+    safeToVideoFile(_videocstr, filename);
     return *this;
   }
 
+  video_output &operator<<(cimarron::post::reframing _ref) {
+    safeToVideoFile(_ref.getFrameVector(), filename);
+    return *this;
+  }
   // video_output &operator<<(framevector _videocstr, String file) {
   //   safeToVideoFile(_videocstr, file);
   //   return *this;

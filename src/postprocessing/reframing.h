@@ -1,4 +1,4 @@
-using namespace iod;
+
 using namespace vpp;
 using namespace s;
 
@@ -8,6 +8,20 @@ using namespace s;
 
 namespace cimarron {
 namespace post {
-class reframing {}
+class reframing {
+  framevector videocstr;
+
+public:
+  reframing() = default;
+
+  decltype(auto) operator<<(framevector _videocstr) {
+    videocstr = _videocstr;
+    return _videocstr;
+  }
+
+  decltype(auto) getFrameVector() { return videocstr; }
+
+private:
+};
 } // namespace post
 } // namespace cimarron
