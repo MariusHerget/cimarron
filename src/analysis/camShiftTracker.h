@@ -18,13 +18,14 @@ private:
   cv::Rect _trackWindow;
   int _hsize = 16;
   cv::Rect _selection;
+  const int _index;
 
 public:
   cv::Mat hsv, hue, mask, hist, backproj;
 
 public:
-  camShiftTracker(int vmin, int vmax, int smin)
-      : _vmin{vmin}, _vmax(vmax), _smin(smin){};
+  camShiftTracker(int vmin, int vmax, int smin, const int index)
+      : _vmin{vmin}, _vmax(vmax), _smin(smin), _index(index){};
 
   void setImage(const cv::Mat image) { image.copyTo(_image); };
   cv::Mat getImage() { return _image; };
@@ -33,6 +34,7 @@ public:
     _currentRect = currentRect;
     _selection = _currentRect;
   };
+  const int getIndex() const { return _index; }
   cv::Rect getTrackingRect() { return _currentRect; };
   cv::RotatedRect track() {
     cv::RotatedRect trackBox;

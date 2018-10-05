@@ -15,10 +15,16 @@ private:
   framevector &frames;
   std::vector<cv::Rect> trackingAreas;
   std::vector<camShiftTracker> camShiftTrackers;
+  int _vmin, _vmax, _smin;
 
 public:
-  localMotionEstimation(framevector &_frames) : frames(_frames) {
+  localMotionEstimation(framevector &_frames, int vmin = 10, int vmax = 255,
+                        int smin = 50)
+      : frames(_frames) {
     auto f = frames[0];
+    _vmin = vmin;
+    _vmax = vmax;
+    _smin = smin;
     // Use 5 squares to follow them
     trackingAreas = std::vector<cv::Rect>{
         cv::Rect((int)f.domain().ncols() * 0.1, (int)f.domain().nrows() * 0.1,
@@ -37,11 +43,12 @@ public:
   correctionData estimateBlockWise(int boxSize) {
     correctionData cd;
 
-    const int _vmin = 10, _vmax = 256, _smin = 30;
+    int n = 0;
     for (auto rec : trackingAreas) {
-      camShiftTracker tracker(_vmin, _vmax, _smin);
+      camShiftTracker tracker(_vmin, _vmax, _smin, n);
       tracker.setTrackingRect(rec);
       camShiftTrackers.push_back(tracker);
+      n++;
     }
 
     int fnumber = 0;
@@ -54,23 +61,25 @@ public:
       for (auto blockTV : frameCD.trackingVectors) {
         // Draw tracking areas.
         cv::Point2f vertices2f[4];
-        blockTV.points(vertices2f);
+        blockTV.trackingVector.points(vertices2f);
 
         for (int i = 0; i < 4; i++)
           cv::line(image, vertices2f[i], vertices2f[(i + 1) % 4],
                    cv::Scalar(0, 255, 0), 2);
 
-        cv::rectangle(image, blockTV.boundingRect(), cv::Scalar(255, 0, 0), 2);
+        cv::rectangle(image, blockTV.trackingVector.boundingRect(),
+                      cv::Scalar(255, 0, 0), 2);
       }
       if (cd.size() > 1)
         for (int i = 1; i < cd.size(); i++)
           for (int o = 0; o < cd[i].trackingVectors.size(); o++)
-            cv::line(image,
-                     cv::Point(cd[i].trackingVectors[o].center.x,
-                               cd[i].trackingVectors[o].center.y),
-                     cv::Point(cd[i - 1].trackingVectors[o].center.x,
-                               cd[i - 1].trackingVectors[o].center.y),
-                     cv::Scalar(255, 255, 255), 1);
+            cv::line(
+                image,
+                cv::Point(cd[i].trackingVectors[o].trackingVector.center.x,
+                          cd[i].trackingVectors[o].trackingVector.center.y),
+                cv::Point(cd[i - 1].trackingVectors[o].trackingVector.center.x,
+                          cd[i - 1].trackingVectors[o].trackingVector.center.y),
+                cv::Scalar(255, 255, 255), 1);
 
       cv::imshow("Tracking Areas", image);
       cv::waitKey(1);
@@ -89,16 +98,17 @@ private:
     auto imagecv = to_opencv(image);
 
     // Preparation for saving all Results
-    std::vector<cv::RotatedRect> retCV;
+    std::vector<TV> retTV;
 
     for (auto tracker : camShiftTrackers) {
       tracker.setImage(imagecv);
       if (tracker.track().boundingRect().area() <= 1)
         continue;
-      retCV.push_back(tracker.track());
+      retTV.push_back(
+          TV{tracker.track(), tracker.getTrackingRect(), tracker.getIndex()});
     }
 
-    return correctionVector(retCV, fnumber);
+    return correctionVector(retTV, fnumber);
   }
 }; // namespace analysis
 } // namespace analysis

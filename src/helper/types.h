@@ -28,12 +28,18 @@ struct coordinates {
 //   correctionData &operator=(correctionData &&other) = default;
 // };
 
-struct correctionVector {
-  std::vector<cv::RotatedRect> trackingVectors;
-  int index;
+struct TV {
+  const cv::RotatedRect trackingVector;
+  const cv::Rect initalPosition;
+  const int index;
+};
 
-  correctionVector(std::vector<cv::RotatedRect> _trackingVectors, int _index)
-      : trackingVectors(_trackingVectors), index(_index) {}
+struct correctionVector {
+  std::vector<TV> trackingVectors;
+  int frameindex;
+
+  correctionVector(std::vector<TV> _trackingVectors, int _frameindex)
+      : trackingVectors(_trackingVectors), frameindex(_frameindex) {}
 };
 
 using correctionData = std::vector<correctionVector>;
