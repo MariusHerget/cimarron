@@ -10,12 +10,24 @@ using namespace s;
 namespace cimarron {
 namespace analysis {
 class camShiftTracker {
+private:
+  bool _start = true;
+  cv::Mat _image;
+  cv::Rect _currentRect;
+  int _vmin, _vmax, _smin;
+  cv::Rect _trackWindow;
+  int _hsize = 16;
+  cv::Rect _selection;
+
+public:
+  cv::Mat hsv, hue, mask, hist, backproj;
+
 public:
   camShiftTracker(int vmin, int vmax, int smin)
       : _vmin{vmin}, _vmax(vmax), _smin(smin){};
 
-  static void setImage(const cv::Mat image) { _image.copyTo(image); };
-  static cv::Mat getImage() { return _image; };
+  void setImage(const cv::Mat image) { image.copyTo(_image); };
+  cv::Mat getImage() { return _image; };
 
   void setTrackingRect(const cv::Rect currentRect) {
     _currentRect = currentRect;
@@ -56,19 +68,16 @@ public:
         backproj, _trackWindow,
         cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 10, 1));
 
+    if (_trackWindow.area() <= 1) {
+      int cols = backproj.cols, rows = backproj.rows,
+          r = (MIN(cols, rows) + 5) / 6;
+      _trackWindow = cv::Rect(_trackWindow.x - r, _trackWindow.y - r,
+                              _trackWindow.x + r, _trackWindow.y + r) &
+                     cv::Rect(0, 0, cols, rows);
+    }
+
     return trackBox;
   };
-
-private:
-  bool _start = true;
-  static cv::Mat _image;
-  cv::Rect _currentRect;
-  int _vmin, _vmax, _smin;
-  cv::Rect _trackWindow;
-  int _hsize = 16;
-  cv::Mat hsv, hue, mask, hist, backproj;
-  // cv::Point _origin;
-  cv::Rect _selection;
 };
 } // namespace analysis
 } // namespace cimarron
