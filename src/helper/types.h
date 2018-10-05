@@ -14,7 +14,6 @@ struct coordinates {
   coordinates(int _x, int _y) : x(_y), y(_y) {}
 };
 
-using correctionData = std::vector<coordinates>;
 // currently not necessacry
 // class correctionData {
 // private:
@@ -28,5 +27,15 @@ using correctionData = std::vector<coordinates>;
 //   correctionData &operator=(const correctionData &other) = default;
 //   correctionData &operator=(correctionData &&other) = default;
 // };
+
+struct correctionVector {
+  std::vector<cv::RotatedRect> trackingVectors;
+  int index;
+
+  correctionVector(std::vector<cv::RotatedRect> _trackingVectors, int _index)
+      : trackingVectors(_trackingVectors), index(_index) {}
+};
+
+using correctionData = std::vector<correctionVector>;
 
 #endif

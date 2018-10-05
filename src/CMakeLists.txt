@@ -30,6 +30,6 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O1 -march=native")
 
 
 add_executable(cimarron cimarron-main.cc)
-add_executable(opencvdemo cimarron-main-opencvdemo.cc)
+# add_executable(opencvdemo cimarron-main-opencvdemo.cc)
 target_link_libraries(cimarron ${OpenCV_LIBS} ${LIBS} ${Boost_LIBRARIES})
-target_link_libraries(opencvdemo ${OpenCV_LIBS} ${LIBS} ${Boost_LIBRARIES})
+# target_link_libraries(opencvdemo ${OpenCV_LIBS} ${LIBS} ${Boost_LIBRARIES})

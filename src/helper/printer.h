@@ -19,7 +19,7 @@ void Coordinates(coordinates c) {
 void CorrectionData(correctionData cd) {
   std::cout << "CorrectionData (" << cd.size() << "): ";
   for (auto c : cd) {
-    cimarron::print::Coordinates(c);
+    // cimarron::print::Coordinates(c);
     std::cout << " ";
   }
   std::cout << std::endl;

@@ -20,7 +20,7 @@ public:
     // cimarron::print::Framevector(frames);
     localMotionEstimation lme(frames);
     auto localcorrection = lme.estimateBlockWise(boxSize);
-    cimarron::print::CorrectionData(localcorrection);
+    // cimarron::print::CorrectionData(localcorrection);
   };
 
 private:
