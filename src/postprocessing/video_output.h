@@ -1,3 +1,5 @@
+#ifndef VO_H
+#define VO_H
 using namespace iod;
 using namespace vpp;
 using namespace s;
@@ -14,6 +16,7 @@ namespace post {
 class video_output {
 private:
   framevector videocstr;
+  framevector lazy;
   cv::VideoWriter output_video;
   std::string filename;
 
@@ -29,14 +32,22 @@ public:
     return *this;
   }
 
-  video_output &operator<<(cimarron::post::reframing _ref) {
-    safeToVideoFile(_ref.getFrameVector(), filename);
-    return *this;
-  }
+  // video_output &operator<<(cimarron::post::reframing _ref) {
+  //   safeToVideoFile(_ref.getFrameVector(), filename);
+  //   return *this;
+  // }
   // video_output &operator<<(framevector _videocstr, String file) {
   //   safeToVideoFile(_videocstr, file);
   //   return *this;
   // }
+  void safeImageToFrameVector(cv::Mat _frame) {
+    safeImageToFrameVector(from_opencv<vuchar3>(_frame));
+  }
+  void safeImageToFrameVector(frame _frame) { lazy.push_back(_frame); }
+  void safeLazy(std::string file) {
+    if (lazy.size() > 0)
+      safeToVideoFile(lazy, file);
+  }
 
 private:
   void safeToVideoFile(framevector _frames, std::string file) {
@@ -74,3 +85,4 @@ private:
 };
 } // namespace post
 } // namespace cimarron
+#endif

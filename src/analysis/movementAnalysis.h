@@ -9,7 +9,7 @@ using namespace s;
 
 namespace cimarron {
 namespace analysis {
-class movementAggregation {
+class movementAnalysis {
 private:
   motionData lme; // localMotionEstimation
 

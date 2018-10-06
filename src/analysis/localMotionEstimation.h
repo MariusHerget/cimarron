@@ -4,8 +4,10 @@ using namespace iod;
 using namespace vpp;
 using namespace s;
 
+#include "../helper/filesystem.h"
 #include "../helper/printer.h"
 #include "../helper/types.h"
+#include "../postprocessing/video_output.h"
 #include "./camShiftTracker.h"
 
 namespace cimarron {
@@ -41,6 +43,7 @@ public:
   };
 
   motionData estimateBlockWise(int boxSize) {
+    cimarron::post::video_output vo;
     motionData md;
 
     int n = 0;
@@ -72,20 +75,44 @@ public:
       }
       if (md.size() > 1)
         for (int i = 1; i < md.size(); i++)
-          for (int o = 0; o < md[i].trackingVectors.size(); o++)
-            cv::line(
-                image,
-                cv::Point(md[i].trackingVectors[o].trackingVector.center.x,
+          for (int o = 0; o < md[i].trackingVectors.size(); o++) {
+            cv::Scalar color;
+            if (o == 0)
+              color = cv::Scalar((i * 2) % 255, 0, 0);
+            else if (o == 1)
+              color = cv::Scalar(0, (i * 2) % 255, 0);
+            else
+              color = cv::Scalar(0, 0, (i * 2) % 255);
+            try {
+              if (md[i].trackingVectors.size() > 0)
+                if (md[i - 1].trackingVectors.size() > 0)
+                  cv::line(
+                      image,
+                      cv::Point(
+                          md[i].trackingVectors[o].trackingVector.center.x,
                           md[i].trackingVectors[o].trackingVector.center.y),
-                cv::Point(md[i - 1].trackingVectors[o].trackingVector.center.x,
+                      cv::Point(
+                          md[i - 1].trackingVectors[o].trackingVector.center.x,
                           md[i - 1].trackingVectors[o].trackingVector.center.y),
-                cv::Scalar(255, 255, 255), 1);
+                      color, 1);
+            } catch (...) {
+              // Catch all exceptions – dangerous!!!
+              // Respond (perhaps only partially) to the exception, then
+              // re-throw to pass the exception to some other handler
+              // ...
+              throw;
+            }
+          }
 
       cv::imshow("Tracking Areas", image);
       cv::waitKey(1);
       fnumber++;
+      // vo.safeImageToFrameVector(image);
     }
     // return std::vector<int, int, int>(0, 0, 0);
+    // cimarron::helper::createDir("./tmp/");
+    // cimarron::helper::createDir("./tmp/results/");
+    // vo.safeLazy("./tmp/results/output-tracked.avi");
     return md;
   }
 

@@ -77,4 +77,5 @@ struct frameDeltaImage {
 };
 using frameDeltaData = std::vector<frameDeltaImage>;
 
+void ouch(int sig) { printf("OUCH! - I got signal %d\n", sig); }
 #endif
