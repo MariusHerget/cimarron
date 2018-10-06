@@ -1,5 +1,6 @@
 // #include "extractFrames.h"
-#include "localMotionEstimation.h"
+#include "./localMotionEstimation.h"
+#include "./movementAggregation.h"
 
 using namespace iod;
 using namespace vpp;
@@ -19,7 +20,8 @@ public:
   analysis(framevector _frames) : frames(_frames) {
     // cimarron::print::Framevector(frames);
     localMotionEstimation lme(frames);
-    auto localcorrection = lme.estimateBlockWise(boxSize);
+    auto localmotion = lme.estimateBlockWise(boxSize);
+    movementAggregation mA(frames, localmotion);
     // cimarron::print::CorrectionData(localcorrection);
   };
 
