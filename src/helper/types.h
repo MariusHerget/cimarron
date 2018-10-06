@@ -57,10 +57,11 @@ struct frameDeltaVector {
   deltaVector deltaPosition;
   float deltaAngle; // - -> rotating left // + -> rotating right
   float deltaArea;
+  int TVindex;
   frameDeltaVector(deltaVector _deltaPosition, float _deltaAngle,
-                   float _deltaArea)
+                   float _deltaArea, int _index)
       : deltaPosition(_deltaPosition), deltaAngle(_deltaAngle),
-        deltaArea(_deltaArea){};
+        deltaArea(_deltaArea), TVindex(_index){};
   frameDeltaVector(){};
 };
 

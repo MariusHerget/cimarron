@@ -19,6 +19,9 @@ public:
   movementAggregation(framevector &_frames, motionData _lme)
       : frames(_frames), lme(_lme) {
     auto aggregatedLocalMF = compareLocalMD();
+    for (auto a : aggregatedLocalMF) {
+      std::cout << a.frameindex << "(" << a.deltaVectors[0].deltaArea << ") ";
+    }
     std::cout << "movementAggregation finished" << std::endl;
   };
 
@@ -26,7 +29,8 @@ private:
   frameDeltaData compareLocalMD() {
     frameDeltaData fdd;
     for (int i = 1; i < lme.size(); i++) {
-      fdd.push_back(compareFramesMD(lme[i - 1], lme[i]));
+      frameDeltaImage fdi = compareFramesMD(lme[i - 1], lme[i]);
+      fdd.push_back(fdi);
     }
     return fdd;
   };
@@ -37,7 +41,8 @@ private:
       for (auto tvnow : fnow.trackingVectors) {
         for (auto tvnext : fnext.trackingVectors) {
           if (tvnow.index == tvnext.index) {
-            fdv.push_back(compareTV(tvnow, tvnext));
+            frameDeltaVector fdvl = compareTV(tvnow, tvnext);
+            fdv.emplace_back(fdvl);
             continue;
           }
         }
@@ -61,7 +66,7 @@ private:
                        ((float)tvnow.trackingVector.size.width *
                         (float)tvnow.trackingVector.size.height);
       return frameDeltaVector(deltaVector(diffCenterX, diffCenterY), diffAngle,
-                              diffArea);
+                              diffArea, tvnow.index);
     } else {
       return frameDeltaVector();
     }
