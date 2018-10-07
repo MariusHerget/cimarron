@@ -82,9 +82,9 @@ struct globalDeltaImage {
   frameDeltaVector deltaVector;
   int frameindex;
   int framenext;
-  globalDeltaImage(frameDeltaVector _deltaVectors, int _frameindex,
+  globalDeltaImage(frameDeltaVector _deltaVector, int _frameindex,
                    int _framenext)
-      : deltaVectors(_deltaVectors), frameindex(_frameindex),
+      : deltaVector(_deltaVector), frameindex(_frameindex),
         framenext(_framenext){};
   globalDeltaImage(int _frameindex, int _framenext)
       : frameindex(_frameindex), framenext(_framenext){};

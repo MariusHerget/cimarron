@@ -52,30 +52,36 @@ public:
     }
   }
   globalDeltaData calcGlobalMotion() {
+    globalDeltaData gdd;
     for (auto fd : fdd) {
+      globalDeltaImage gdi(fd.frameindex, fd.framenext);
       // Sonderfall nur ein TV
       if (fd.deltaVectors.size() == 0) {
         // return 0 TODO
+        gdi =
+            globalDeltaImage(frameDeltaVector(deltaVector(0., 0.), 0., 0., -1),
+                             fd.frameindex, fd.framenext);
       } else if (fd.deltaVectors.size() == 1) {
         // return the single DeltaVector
+        gdi = globalDeltaImage(fd.deltaVectors[0], fd.frameindex, fd.framenext);
+        gdi.deltaVector.TVindex = -1;
       } else {
         // Calc simularity and decide whether theres is camera shake
-        std::vector<float> vectorsims;
-        std::vector<float> agnlesims;
+        std::vector<std::vector<float>> vectorsims;
+        std::vector<std::vector<float>> anglesims;
         for (int i = 0; i < fd.deltaVectors.size(); i++) {
           for (int o = i + 1; o < fd.deltaVectors.size(); o++) {
             vectorsims.push_back(
                 calcVectorsSimilarty(&fd.deltaVectors[i], &fd.deltaVectors[o]));
             anglesims.push_back(
                 calcAngleSimilarty(&fd.deltaVectors[i], &fd.deltaVectors[o]));
-                );
           }
         }
 
         std::cout << "Sims (" << fd.frameindex << " -> " << fd.frameindex
                   << "): ";
         for (auto sim : vectorsims) {
-          std::cout << sim << ", ";
+          std::cout << sim[0] << ", ";
         }
         std::cout << std::endl;
 
@@ -100,7 +106,6 @@ public:
 
         // Calculate Global motion
         // Vectors:
-        globalDeltaImage gdi(fd.frameindex, fd.framenext);
         float gdiangle;
         deltaVector gdidv;
         if (similarVectors > (threshHoldSimilar * vectorsims.size())) {
@@ -117,9 +122,11 @@ public:
         } else {
           gdiangle = 0.;
         }
-        gdi.deltaVector = deltaVector(gdidv, gdiangle, 0., -1);
+        gdi.deltaVector = frameDeltaVector(gdidv, gdiangle, 0., -1);
       }
+      gdd.push_back(gdi);
     }
+    return gdd;
   }
 
 private:
@@ -128,8 +135,8 @@ private:
     auto cossim = cosine_similarity(DVfirst, DVsecond);
     auto eucdist = euclidean_distance(DVfirst, DVsecond);
     // return (0.5 * cossim + 0.5 * eucdist);
-    return std::vector<float>(cossim, DVfirst->deltaPosition.x,
-                              DVfirst->deltaPosition.y);
+    return std::vector<float>{cossim, DVfirst->deltaPosition.x,
+                              DVfirst->deltaPosition.y};
   }
   std::vector<float> calcAngleSimilarty(frameDeltaVector *DVfirst,
                                         frameDeltaVector *DVsecond) {
@@ -139,15 +146,15 @@ private:
     auto screase = DVsecond->deltaAngle - DVfirst->deltaAngle;
     auto spercfirst = screase / DVsecond->deltaAngle * 100;
 
-    auto retAngle = 0.0;
+    float retAngle = 0.0;
     if (std::abs(percfirst) > std::abs(spercfirst)) {
       retAngle = percfirst;
     } else {
       retAngle = spercfirst;
     }
 
-    return std::vector<float>(
-        std::max(std::abs(percfirst), std::abs(spercfirst)), retAngle);
+    return std::vector<float>{
+        std::max(std::abs(percfirst), std::abs(spercfirst)), retAngle};
   }
 };
 } // namespace analysis
