@@ -12,19 +12,22 @@ namespace analysis {
 class movementAggregation {
 private:
   motionData lme; // localMotionEstimation
-
   framevector &frames;
+  frameDeltaData aggregatedLocalMF;
 
 public:
   movementAggregation(framevector &_frames, motionData _lme)
       : frames(_frames), lme(_lme) {
-    auto aggregatedLocalMF = compareLocalMD();
+    aggregatedLocalMF = compareLocalMD();
     for (auto a : aggregatedLocalMF) {
-      std::cout << a.frameindex << "(" << a.deltaVectors[0].TVindex << ": "
-                << a.deltaVectors[0].deltaPosition.x << ") ";
+      if (a.deltaVectors.size() > 0)
+        std::cout << a.frameindex << "(" << a.deltaVectors[0].TVindex << ": "
+                  << a.deltaVectors[0].deltaPosition.x << ") ";
     }
     std::cout << "movementAggregation finished" << std::endl;
   };
+
+  decltype(auto) getDelta() { return aggregatedLocalMF; }
 
 private:
   frameDeltaData compareLocalMD() {

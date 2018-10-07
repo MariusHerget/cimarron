@@ -72,6 +72,11 @@ public:
 
         cv::rectangle(image, blockTV.trackingVector.boundingRect(),
                       cv::Scalar(255, 0, 0), 2);
+
+        // Print trackingvector fnumber
+        cv::putText(
+            image, std::to_string(blockTV.index), blockTV.trackingVector.center,
+            cv::FONT_HERSHEY_COMPLEX_SMALL, 2, (255, 255, 255), 2, cv::LINE_AA);
       }
       if (md.size() > 1)
         for (int i = 1; i < md.size(); i++)

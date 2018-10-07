@@ -57,7 +57,7 @@ struct frameDeltaVector {
   deltaVector deltaPosition;
   float deltaAngle; // - -> rotating left // + -> rotating right
   float deltaArea;
-  int TVindex;
+  int TVindex; // -1 = global
   frameDeltaVector(deltaVector _deltaPosition, float _deltaAngle,
                    float _deltaArea, int _index)
       : deltaPosition(_deltaPosition), deltaAngle(_deltaAngle),
@@ -77,5 +77,18 @@ struct frameDeltaImage {
 };
 using frameDeltaData = std::vector<frameDeltaImage>;
 
-void ouch(int sig) { printf("OUCH! - I got signal %d\n", sig); }
+// Gloabl Motion Estimation: Information for stabilization the video
+struct globalDeltaImage {
+  frameDeltaVector deltaVector;
+  int frameindex;
+  int framenext;
+  globalDeltaImage(frameDeltaVector _deltaVectors, int _frameindex,
+                   int _framenext)
+      : deltaVectors(_deltaVectors), frameindex(_frameindex),
+        framenext(_framenext){};
+  globalDeltaImage(int _frameindex, int _framenext)
+      : frameindex(_frameindex), framenext(_framenext){};
+  globalDeltaImage(){};
+};
+using globalDeltaData = std::vector<globalDeltaImage>;
 #endif
