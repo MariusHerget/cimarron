@@ -41,7 +41,8 @@ public:
                          (int)std::abs(resize.x), cv::BORDER_CONSTANT,
                          cv::Scalar(0, 0, 0));
       performPositionShift(resized, gdi.deltaVector);
-      performPositionShift(resized, gdi.deltaVector);
+      // gdi.deltaVector.deltaAngle = 45;
+      performRotation(resized, gdi.deltaVector);
       auto fret = vpp::from_opencv<unsigned char>(resized);
       cv::imshow("transformFrames", resized);
       cv::waitKey(1);
@@ -59,26 +60,16 @@ private:
     }
     return deltaVector(xmax, ymax);
   }
-  cv::Mat performPositionShift(cv::Mat &image, frameDeltaVector dv) {
+  void performPositionShift(cv::Mat &image, frameDeltaVector dv) {
     cv::Mat trans_mat = (cv::Mat_<double>(2, 3) << 1, 0, dv.deltaPosition.x, 0,
                          1, dv.deltaPosition.y);
     cv::warpAffine(image, image, trans_mat, image.size());
-    return trans_mat;
   }
-  cv::Mat perfornRotation(cv::Mat &image, frameDeltaVector dv) {
-    // get rotation matrix for rotating the image around its center in pixel
-    // coordinates
+  void performRotation(cv::Mat &image, frameDeltaVector dv) {
     cv::Point2f center((image.cols - 1) / 2.0, (image.rows - 1) / 2.0);
     cv::Mat rot = cv::getRotationMatrix2D(center, dv.deltaAngle, 1.0);
-    // determine bounding rectangle, center not relevant
-    cv::Rect2f bbox =
-        cv::RotatedRect(cv::Point2f(), image.size(), dv.deltaAngle)
-            .boundingRect2f();
-    // adjust transformation matrix
-    rot.at<double>(0, 2) += bbox.width / 2.0 - image.cols / 2.0;
-    rot.at<double>(1, 2) += bbox.height / 2.0 - image.rows / 2.0;
 
-    cv::warpAffine(image, image, rot, bbox.size());
+    cv::warpAffine(image, image, rot, image.size());
   }
 };
 } // namespace stabilziation

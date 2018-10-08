@@ -19,6 +19,8 @@ private:
   std::vector<camShiftTracker> camShiftTrackers;
   int _vmin, _vmax, _smin;
 
+  double sizeTrackingAreas = 0.25;
+
 public:
   localMotionEstimation(framevector &_frames, int vmin = 10, int vmax = 255,
                         int smin = 50)
@@ -29,16 +31,51 @@ public:
     _smin = smin;
     // Use 5 squares to follow them
     trackingAreas = std::vector<cv::Rect>{
-        cv::Rect((int)f.domain().ncols() * 0.1, (int)f.domain().nrows() * 0.1,
-                 (int)f.domain().ncols() * 0.1, (int)f.domain().nrows() * 0.1),
-        cv::Rect((int)f.domain().ncols() * 0.7, (int)f.domain().nrows() * 0.1,
-                 (int)f.domain().ncols() * 0.1, (int)f.domain().nrows() * 0.1),
-        cv::Rect((int)f.domain().ncols() * 0.1, (int)f.domain().nrows() * 0.7,
-                 (int)f.domain().ncols() * 0.1, (int)f.domain().nrows() * 0.1),
-        cv::Rect((int)f.domain().ncols() * 0.7, (int)f.domain().nrows() * 0.7,
-                 (int)f.domain().ncols() * 0.1, (int)f.domain().nrows() * 0.1),
-        cv::Rect((int)f.domain().ncols() * 0.4, (int)f.domain().nrows() * 0.4,
-                 (int)f.domain().ncols() * 0.1, (int)f.domain().nrows() * 0.1)};
+        cv::Rect((int)f.domain().ncols() * 0.05, (int)f.domain().nrows() * 0.05,
+                 (int)f.domain().ncols() * sizeTrackingAreas,
+                 (int)f.domain().nrows() * sizeTrackingAreas),
+
+        cv::Rect((int)f.domain().ncols() * (0.5 - sizeTrackingAreas / 2),
+                 (int)f.domain().nrows() * 0.05,
+                 (int)f.domain().ncols() * sizeTrackingAreas,
+                 (int)f.domain().nrows() * sizeTrackingAreas),
+
+        cv::Rect((int)f.domain().ncols() * (0.95 - sizeTrackingAreas),
+                 (int)f.domain().nrows() * 0.05,
+                 (int)f.domain().ncols() * sizeTrackingAreas,
+                 (int)f.domain().nrows() * sizeTrackingAreas),
+
+        cv::Rect((int)f.domain().ncols() * 0.05,
+                 (int)f.domain().nrows() * (0.5 - sizeTrackingAreas / 2),
+                 (int)f.domain().ncols() * sizeTrackingAreas,
+                 (int)f.domain().nrows() * sizeTrackingAreas),
+
+        cv::Rect((int)f.domain().ncols() * (0.5 - sizeTrackingAreas / 2),
+                 (int)f.domain().nrows() * (0.5 - sizeTrackingAreas / 2),
+                 (int)f.domain().ncols() * sizeTrackingAreas,
+                 (int)f.domain().nrows() * sizeTrackingAreas),
+
+        cv::Rect((int)f.domain().ncols() * (0.95 - sizeTrackingAreas),
+                 (int)f.domain().nrows() * (0.5 - sizeTrackingAreas / 2),
+                 (int)f.domain().ncols() * sizeTrackingAreas,
+                 (int)f.domain().nrows() * sizeTrackingAreas),
+
+        cv::Rect((int)f.domain().ncols() * 0.05,
+                 (int)f.domain().nrows() * (0.95 - sizeTrackingAreas),
+                 (int)f.domain().ncols() * sizeTrackingAreas,
+                 (int)f.domain().nrows() * sizeTrackingAreas),
+
+        cv::Rect((int)f.domain().ncols() * (0.5 - sizeTrackingAreas / 2),
+                 (int)f.domain().nrows() * (0.95 - sizeTrackingAreas),
+                 (int)f.domain().ncols() * sizeTrackingAreas,
+                 (int)f.domain().nrows() * sizeTrackingAreas),
+
+        cv::Rect((int)f.domain().ncols() * (0.95 - sizeTrackingAreas),
+                 (int)f.domain().nrows() * (0.95 - sizeTrackingAreas),
+                 (int)f.domain().ncols() * sizeTrackingAreas,
+                 (int)f.domain().nrows() * sizeTrackingAreas)
+
+    };
     std::cout << "trackingAreas: " << trackingAreas.size() << std::endl;
   };
 
@@ -77,6 +114,10 @@ public:
         cv::putText(
             image, std::to_string(blockTV.index), blockTV.trackingVector.center,
             cv::FONT_HERSHEY_COMPLEX_SMALL, 2, (255, 255, 255), 2, cv::LINE_AA);
+
+        for (auto rec : trackingAreas) {
+          cv::rectangle(image, rec, cv::Scalar(0, 0, 255), 2);
+        }
       }
       if (md.size() > 1)
         for (int i = 1; i < md.size(); i++)
@@ -91,15 +132,20 @@ public:
             try {
               if (md[i].trackingVectors.size() > 0)
                 if (md[i - 1].trackingVectors.size() > 0)
-                  cv::line(
-                      image,
-                      cv::Point(
-                          md[i].trackingVectors[o].trackingVector.center.x,
-                          md[i].trackingVectors[o].trackingVector.center.y),
-                      cv::Point(
-                          md[i - 1].trackingVectors[o].trackingVector.center.x,
-                          md[i - 1].trackingVectors[o].trackingVector.center.y),
-                      color, 1);
+                  if (md[i].trackingVectors[o].trackingVector.center.x != 0 &&
+                      md[i].trackingVectors[o].trackingVector.center.y != 0)
+                    cv::line(
+                        image,
+                        cv::Point(
+                            md[i].trackingVectors[o].trackingVector.center.x,
+                            md[i].trackingVectors[o].trackingVector.center.y),
+                        cv::Point(md[i - 1]
+                                      .trackingVectors[o]
+                                      .trackingVector.center.x,
+                                  md[i - 1]
+                                      .trackingVectors[o]
+                                      .trackingVector.center.y),
+                        color, 1);
             } catch (...) {
               // Catch all exceptions – dangerous!!!
               // Respond (perhaps only partially) to the exception, then

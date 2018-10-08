@@ -96,7 +96,7 @@ public:
           }
         }
         int similarAngles = 0;
-        int similarAnglesSum = 0;
+        float similarAnglesSum = 0;
         for (auto ang : anglesims) {
           if (ang[0] > 0.1) {
             similarAngles++;
@@ -148,9 +148,9 @@ private:
 
     float retAngle = 0.0;
     if (std::abs(percfirst) > std::abs(spercfirst)) {
-      retAngle = percfirst;
+      retAngle = DVfirst->deltaAngle;
     } else {
-      retAngle = spercfirst;
+      retAngle = DVsecond->deltaAngle;
     }
     if (std::isinf(percfirst))
       percfirst = 0.;

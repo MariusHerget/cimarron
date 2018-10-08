@@ -22,7 +22,7 @@ public:
     for (auto a : aggregatedLocalMF) {
       if (a.deltaVectors.size() > 0)
         std::cout << a.frameindex << "(" << a.deltaVectors[0].TVindex << ": "
-                  << a.deltaVectors[0].deltaPosition.x << ") ";
+                  << a.deltaVectors[0].deltaAngle << ") ";
     }
     std::cout << "movementAggregation finished" << std::endl;
   };
