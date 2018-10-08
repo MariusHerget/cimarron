@@ -22,7 +22,12 @@ private:
 
 public:
   video_output() = default;
-  video_output(framevector _videocstr) : videocstr(_videocstr){};
+  video_output(framevector _videocstr, std::string _file)
+      : videocstr(_videocstr), filename(_file) {
+    std::cout << "Output file: " << _file << "\n Dimensions"
+              << (int)_videocstr[0].domain().nrows() << " / "
+              << (int)_videocstr[0].domain().ncols() << std::endl;
+  };
   video_output(std::string _file) : filename(_file){};
 
   // video_output &operator<<(String file) { safeToVideoFile(videocstr, file); }
@@ -48,6 +53,8 @@ public:
     if (lazy.size() > 0)
       safeToVideoFile(lazy, file);
   }
+
+  void safe(framevector _f, std::string _file) { safeToVideoFile(_f, _file); }
 
 private:
   void safeToVideoFile(framevector _frames, std::string file) {

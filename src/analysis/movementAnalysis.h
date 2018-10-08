@@ -28,7 +28,6 @@ public:
     threshHoldCameraErrors = deltaVector(frames[0].domain().ncols() * 0.10,
                                          frames[0].domain().nrows() * 0.10);
     filterTrackingErrors();
-    calcGlobalMotion();
   };
   void filterTrackingErrors() {
     // PROTOTYPE TODO: Check whether this works.
@@ -53,6 +52,7 @@ public:
   }
   globalDeltaData calcGlobalMotion() {
     globalDeltaData gdd;
+    std::cout << "Calculation GlobalMotionVectors" << std::endl;
     for (auto fd : fdd) {
       globalDeltaImage gdi(fd.frameindex, fd.framenext);
       // Sonderfall nur ein TV
@@ -78,12 +78,12 @@ public:
           }
         }
 
-        std::cout << "Sims (" << fd.frameindex << " -> " << fd.frameindex
-                  << "): ";
-        for (auto sim : vectorsims) {
-          std::cout << sim[0] << ", ";
-        }
-        std::cout << std::endl;
+        // std::cout << "Sims (" << fd.frameindex << " -> " << fd.framenext
+        //           << "): ";
+        // for (auto sim : vectorsims) {
+        //   std::cout << sim[0] << ", ";
+        // }
+        // std::cout << std::endl;
 
         int similarVectors = 0;
         float simVectorsx = 0.0;
@@ -152,6 +152,10 @@ private:
     } else {
       retAngle = spercfirst;
     }
+    if (std::isinf(percfirst))
+      percfirst = 0.;
+    if (std::isinf(spercfirst))
+      spercfirst = 0.;
 
     return std::vector<float>{
         std::max(std::abs(percfirst), std::abs(spercfirst)), retAngle};

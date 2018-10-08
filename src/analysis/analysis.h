@@ -18,6 +18,9 @@ private:
   int boxSize = 10;
 
 public:
+  globalDeltaData gdd;
+
+public:
   analysis(framevector _frames) : frames(_frames) {
     // cimarron::print::Framevector(frames);
     localMotionEstimation lme(frames);
@@ -25,6 +28,7 @@ public:
     movementAggregation mAggro(frames, localmotion);
     movementAnalysis mAnal(frames, mAggro.getDelta());
     // cimarron::print::CorrectionData(localcorrection);
+    gdd = mAnal.calcGlobalMotion();
   };
 
 private:

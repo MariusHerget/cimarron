@@ -15,6 +15,7 @@
 #include "postprocessing/reframing.h"
 #include "postprocessing/video_output.h"
 #include "preprocessing/preprocessing.h"
+#include "stabilziation/stabilziation.h"
 #include "test/symbols.hh"
 
 using namespace iod;
@@ -44,11 +45,14 @@ int main(int argc, const char *argv[]) {
   // std::cout << "Input: " << _video << "\nOutput: " << _outputLocation;
   cimarron::pre::preprocessing pre(opts.video.c_str());
   auto frames = pre.getFrameVector();
-  cimarron::post::video_output vo(opts.record_video);
   cimarron::post::reframing ref();
   cimarron::analysis::analysis ana(frames);
+  cimarron::stabilziation::stabilziation stab(frames, ana.gdd);
+  auto finFrames = stab.getTransformedFramevector();
+  // DEBUG POINT
+  cimarron::post::video_output vo;
   // Currently this:
-  vo << frames;
+  vo.safe(finFrames, argv[2]);
   // how can I do this:
   // vo << ref << frames;
 }
