@@ -22,7 +22,7 @@ private:
   double sizeTrackingAreas = 0.25;
 
 public:
-  localMotionEstimation(framevector &_frames, int vmin = 10, int vmax = 255,
+  localMotionEstimation(framevector &_frames, int vmin = 120, int vmax = 255,
                         int smin = 50)
       : frames(_frames) {
     auto f = frames[0];

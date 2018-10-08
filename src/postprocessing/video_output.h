@@ -64,8 +64,8 @@ private:
     // cv::Size S = cv::Size((int)_frames[0].domain().nrows(),
     //                       (int)_frames[0].domain().ncols());
     // Weird bug - changed order of cols and rows
-    std::cout << "SIZE: " << (int)_frames[0].domain().nrows() << " / "
-              << (int)_frames[0].domain().ncols() << std::endl;
+    std::cout << "SIZE: " << (int)_frames[0].domain().ncols() << " / "
+              << (int)_frames[0].domain().nrows() << std::endl;
     outputVideo.open(
         file, cv::VideoWriter::fourcc('I', '4', '2', '0'), 24.f,
         cv::Size(_frames[0].domain().ncols(), _frames[0].domain().nrows()),
@@ -75,7 +75,7 @@ private:
                 << std::endl;
       throw std::invalid_argument("Videooutput error!");
     }
-    outputVideo << to_opencv(_frames[0]);
+    // outputVideo << to_opencv(_frames[0]);/
     std::cout << "Framevector safe: " << _frames.size() << std::endl;
     for (frame f : _frames) {
       auto fr = clone(f, _border = 0);

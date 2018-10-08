@@ -55,4 +55,6 @@ int main(int argc, const char *argv[]) {
   vo.safe(finFrames, argv[2]);
   // how can I do this:
   // vo << ref << frames;
+  while (true)
+    ;
 }
