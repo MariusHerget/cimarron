@@ -33,9 +33,6 @@ public:
                          (int)std::abs(resize.y), (int)std::abs(resize.x),
                          (int)std::abs(resize.x), cv::BORDER_CONSTANT,
                          cv::Scalar(0, 0, 0));
-      performPositionShift(resized, gdi.deltaVector);
-      // gdi.deltaVector.deltaAngle = 45;
-      performRotation(resized, gdi.deltaVector);
       auto fret = vpp::from_opencv<unsigned char>(resized);
       cv::imshow("transformFrames", resized);
       cv::waitKey(1);
