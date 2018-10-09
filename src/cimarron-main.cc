@@ -45,10 +45,11 @@ int main(int argc, const char *argv[]) {
   // std::cout << "Input: " << _video << "\nOutput: " << _outputLocation;
   cimarron::pre::preprocessing pre(opts.video.c_str());
   auto frames = pre.getFrameVector();
-  cimarron::post::reframing ref();
   cimarron::analysis::analysis ana(frames);
   cimarron::stabilziation::stabilziation stab(frames, ana.gdd);
   auto finFrames = stab.getTransformedFramevector();
+  // cimarron::post::reframing ref(finFrames, ana.gdd);
+  // auto reframeFrames = ref.reframe();
   // DEBUG POINT
   cimarron::post::video_output vo;
   // Currently this:

@@ -39,7 +39,7 @@ public:
       cv::copyMakeBorder(image, resized, (int)std::abs(resize.y),
                          (int)std::abs(resize.y), (int)std::abs(resize.x),
                          (int)std::abs(resize.x), cv::BORDER_CONSTANT,
-                         cv::Scalar(0, 0, 0));
+                         cv::Scalar(-1, -1, -1));
       performPositionShift(resized, gdi.deltaVector);
       // gdi.deltaVector.deltaAngle = 45;
       performRotation(resized, gdi.deltaVector);
@@ -53,6 +53,7 @@ public:
 
 private:
   deltaVector calcMaxTransformation() {
+    // Calculate the maximum change in position for resizing
     float xmax = 0., ymax = 0.;
     for (auto gdi : gdd) {
       xmax = std::max(xmax, std::abs(gdi.deltaVector.deltaPosition.x));
@@ -61,11 +62,13 @@ private:
     return deltaVector(xmax, ymax);
   }
   void performPositionShift(cv::Mat &image, frameDeltaVector dv) {
+    // Perform position shift
     cv::Mat trans_mat = (cv::Mat_<double>(2, 3) << 1, 0, dv.deltaPosition.x, 0,
                          1, dv.deltaPosition.y);
     cv::warpAffine(image, image, trans_mat, image.size());
   }
   void performRotation(cv::Mat &image, frameDeltaVector dv) {
+    // Perform rotation
     cv::Point2f center((image.cols - 1) / 2.0, (image.rows - 1) / 2.0);
     cv::Mat rot = cv::getRotationMatrix2D(center, dv.deltaAngle, 1.0);
 

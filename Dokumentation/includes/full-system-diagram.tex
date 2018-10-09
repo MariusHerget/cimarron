@@ -1,0 +1,25 @@
+\begin{figure}[h!]
+% \centered
+\small
+\begin{tikzpicture}[node distance=1cm and 2cm,auto]
+    \node [input, name=input] {};
+    \node [block, right= of input] (pre1) {\textbf{Decoding} Extracting frames};
+    \node [block, right= of pre] (analysis1) {\textit{\tiny Local Motion Estimation:} CAMShift Tracking};
+    \node [block, right= of analysis1] (analysis2) {\textit{\tiny Motion Aggregation:} CompareTrackingVectors};
+    \node [block, right= of analysis2] (analysis3) {\textit{\tiny Motion Analysis:} Filter Tracking Errors};
+    \node [block, below= of analysis3] (analysis3) {\textit{\tiny Global Motion Analysis:} Aggregation to global motion data};
+    \node [block, left= of analysis3] (stabi) {\textit{\tiny Stabilization:} Transform frames};
+    \node [block, left= of stabi] (post1) {\textit{\tiny Post-processing:} Reframe image};
+    \node [block, left= of post1] (post2) {Encoding};
+    \node [input, left=of post2] (output) {t};
+
+    \node [storage, below right=0.5cm and 0.7cm of analysis] (analysisstorage) {DB};
+
+     \draw[->](input) -- node {Video}(pre);
+     \draw[->](analysis1) -- node {Motion Tracking Data}(analysis2);
+     \draw[->](analysis1) -- node {\tiny Correctiondata} node[below]{m(n) = TV(n)}(analysis2);
+
+     \draw[->](post) -- node {Video}(output);
+\end{tikzpicture}
+\caption{High-level system diagram}
+\end{figure}

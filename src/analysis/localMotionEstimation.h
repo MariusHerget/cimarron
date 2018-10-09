@@ -29,7 +29,7 @@ public:
     _vmin = vmin;
     _vmax = vmax;
     _smin = smin;
-    // Use 5 squares to follow them
+    // Use 9 squares to follow them
     trackingAreas = std::vector<cv::Rect>{
         cv::Rect((int)f.domain().ncols() * 0.05, (int)f.domain().nrows() * 0.05,
                  (int)f.domain().ncols() * sizeTrackingAreas,
@@ -115,6 +115,7 @@ public:
             image, std::to_string(blockTV.index), blockTV.trackingVector.center,
             cv::FONT_HERSHEY_COMPLEX_SMALL, 2, (255, 255, 255), 2, cv::LINE_AA);
 
+        // Print intial tracking areas
         for (auto rec : trackingAreas) {
           cv::rectangle(image, rec, cv::Scalar(0, 0, 255), 2);
         }
@@ -123,6 +124,7 @@ public:
         for (int i = 1; i < md.size(); i++)
           for (int o = 0; o < md[i].trackingVectors.size(); o++) {
             cv::Scalar color;
+            // Print history of tracking vectors --> does not work correct
             if (o == 0)
               color = cv::Scalar((i * 2) % 255, 0, 0);
             else if (o == 1)

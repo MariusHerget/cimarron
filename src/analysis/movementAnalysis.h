@@ -24,21 +24,15 @@ private:
 public:
   movementAnalysis(framevector &_frames, frameDeltaData _fdd)
       : frames(_frames), fdd(_fdd) {
-    // DEBUG POINT
     threshHoldCameraErrors = deltaVector(frames[0].domain().ncols() * 0.10,
                                          frames[0].domain().nrows() * 0.10);
     filterTrackingErrors();
   };
   void filterTrackingErrors() {
-    // PROTOTYPE TODO: Check whether this works.
     std::cout << "threshHoldCameraErrors (" << threshHoldCameraErrors.x << "/"
               << threshHoldCameraErrors.y << ")" << std::endl;
     for (auto fd : fdd) {
       for (int i = 0; i < fd.deltaVectors.size(); i++) {
-        // std::cout << "TV(" << fd.deltaVectors[i].TVindex << ": "
-        //           << std::abs(fd.deltaVectors[i].deltaPosition.x) << "/"
-        //           << std::abs(fd.deltaVectors[i].deltaPosition.y)
-        //           << " ) from frame " << fd.frameindex << std::endl;
         if (std::abs(fd.deltaVectors[i].deltaPosition.x) >
                 threshHoldCameraErrors.x ||
             std::abs(fd.deltaVectors[i].deltaPosition.y) >
@@ -57,11 +51,12 @@ public:
       globalDeltaImage gdi(fd.frameindex, fd.framenext);
       // Sonderfall nur ein TV
       if (fd.deltaVectors.size() == 0) {
-        // return 0 TODO
         gdi =
             globalDeltaImage(frameDeltaVector(deltaVector(0., 0.), 0., 0., -1),
                              fd.frameindex, fd.framenext);
+
       } else if (fd.deltaVectors.size() == 1) {
+        // Gute Lösung? TODO
         // return the single DeltaVector
         gdi = globalDeltaImage(fd.deltaVectors[0], fd.frameindex, fd.framenext);
         gdi.deltaVector.TVindex = -1;
@@ -78,17 +73,13 @@ public:
           }
         }
 
-        // std::cout << "Sims (" << fd.frameindex << " -> " << fd.framenext
-        //           << "): ";
-        // for (auto sim : vectorsims) {
-        //   std::cout << sim[0] << ", ";
-        // }
-        // std::cout << std::endl;
-
+        // Check whether sim and offset holds the global threshold
+        //
         int similarVectors = 0;
         float simVectorsx = 0.0;
         float simVectorsy = 0.0;
         for (auto sim : vectorsims) {
+          // Sim is higher than 0.7
           if (sim[0] > threshHoldSimiliartyTV) {
             similarVectors++;
             simVectorsx += sim[1];
@@ -98,6 +89,7 @@ public:
         int similarAngles = 0;
         float similarAnglesSum = 0;
         for (auto ang : anglesims) {
+          // Angle difference is higher than 10%
           if (ang[0] > 0.1) {
             similarAngles++;
             similarAnglesSum += ang[1];
@@ -108,6 +100,8 @@ public:
         // Vectors:
         float gdiangle;
         deltaVector gdidv;
+        // If there are enough vectors with high enough similarity calculate the
+        // mean
         if (similarVectors > (threshHoldSimilar * vectorsims.size())) {
           // Enough similar
           gdidv = deltaVector(simVectorsx / similarVectors,
@@ -132,6 +126,8 @@ public:
 private:
   std::vector<float> calcVectorsSimilarty(frameDeltaVector *DVfirst,
                                           frameDeltaVector *DVsecond) {
+    // Use only cosine_similarity
+    // Maybe euclidean_distance but how we rate it?
     auto cossim = cosine_similarity(DVfirst, DVsecond);
     auto eucdist = euclidean_distance(DVfirst, DVsecond);
     // return (0.5 * cossim + 0.5 * eucdist);
