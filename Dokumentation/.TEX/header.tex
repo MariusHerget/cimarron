@@ -1,4 +1,13 @@
-\documentclass[10pt,a4paper,onesided]{book}
+\documentclass[%
+	pdftex,
+	oneside,        % Einseitiger Druck.
+	12pt,           % Schriftgroesse
+	parskip=half,   % Halbe Zeile Abstand zwischen Absätzen.
+	headsepline,    % Linie nach Kopfzeile.
+	footsepline,    % Linie vor Fusszeile.
+	english,        % Translator
+]{article}
+
 
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
@@ -16,15 +25,16 @@
 \usepackage{floatrow}
 \graphicspath{ {./images/} }
 
-\usepackage[landscape]{geometry}
+\usepackage[]{geometry}
 \usepackage{pdflscape}
-
+\usepackage{booktabs}
 
 \usepackage{cleveref}
 \usepackage{tikz}
 \usetikzlibrary{decorations.pathreplacing,shapes,arrows,positioning}
 \usetikzlibrary{positioning}
 \usetikzlibrary{backgrounds}
+\usetikzlibrary{patterns}
 
 \tikzstyle{input} = [coordinate]
 \tikzstyle{output} = [coordinate]
@@ -52,3 +62,6 @@
 }
 % Fixme
 \fxsetup{envlayout=plain}
+
+\usepackage[backend=bibtex,style=numeric]{biblatex}
+\addbibresource{lib/research.bib}

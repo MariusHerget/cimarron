@@ -53,3 +53,24 @@ PROZESSMODEL
 System und beschränkungen klar rausschreiben
 
 Verfahrne -> Konzepte (Modellierung)
+
+
+# 9.10.2018
+Konzeptformulieren (siehe CPP reference)
+- Streamdarstellung:
+  - Übergabe von streams, bzw einzelnen Frames -> Pipelining
+  - Anpassung im Nachhinhein
+  - MultiThreading
+- Stream:
+  - globale Überladung
+  - Link vom Fuchs kommt TODO
+
+- Smooth:
+  - Ableitung Ort über Zeit (2D.)
+  - 3/5 Punkt Ableitung
+  - Theorie in die Presi
+
+- Prozesskette
+- Konzepte
+- Smoothing evtl
+- Code Cleanup

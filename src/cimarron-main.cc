@@ -11,6 +11,7 @@
 #include <vpp/vpp.hh>
 
 #include "analysis/analysis.h"
+#include "helper/stream.h"
 #include "helper/types.h"
 #include "postprocessing/reframing.h"
 #include "postprocessing/video_output.h"
@@ -42,18 +43,20 @@ int main(int argc, const char *argv[]) {
       _detector_th = int(10), _keypoint_spacing = int(5),
       _record_video = std::string());
 
+  framevector frames;
+  opts.video.c_str() >> cimarron::pre::preprocessing();
   // std::cout << "Input: " << _video << "\nOutput: " << _outputLocation;
-  cimarron::pre::preprocessing pre(opts.video.c_str());
-  auto frames = pre.getFrameVector();
-  cimarron::analysis::analysis ana(frames);
-  cimarron::stabilziation::stabilziation stab(frames, ana.gdd);
-  auto finFrames = stab.getTransformedFramevector();
-  // cimarron::post::reframing ref(finFrames, ana.gdd);
-  // auto reframeFrames = ref.reframe();
-  // DEBUG POINT
-  cimarron::post::video_output vo;
-  // Currently this:
-  vo.safe(finFrames, argv[2]);
+  // cimarron::pre::preprocessing pre(opts.video.c_str());
+  // auto frames = pre.getFrameVector();
+  // cimarron::analysis::analysis ana(frames);
+  // cimarron::stabilziation::stabilziation stab(frames, ana.gdd);
+  // auto finFrames = stab.getTransformedFramevector();
+  // // cimarron::post::reframing ref(finFrames, ana.gdd);
+  // // auto reframeFrames = ref.reframe();
+  // // DEBUG POINT
+  // cimarron::post::video_output vo;
+  // // Currently this:
+  // vo.safe(finFrames, argv[2]);
   // how can I do this:
   // vo << ref << frames;
   while (true)
