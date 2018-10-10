@@ -15,51 +15,42 @@ namespace cimarron {
 namespace post {
 class video_output {
 private:
-  framevector videocstr;
-  framevector lazy;
+  framevector frames;
   cv::VideoWriter output_video;
   std::string filename;
 
 public:
   video_output() = default;
-  video_output(framevector _videocstr, std::string _file)
-      : videocstr(_videocstr), filename(_file) {
+  video_output(framevector const &_f, std::string _file)
+      : frames(_f), filename(_file) {
     std::cout << "Output file: " << _file << "\n Dimensions"
-              << (int)_videocstr[0].domain().nrows() << " / "
-              << (int)_videocstr[0].domain().ncols() << std::endl;
+              << (int)frames[0].domain().nrows() << " / "
+              << (int)frames[0].domain().ncols() << std::endl;
   };
   video_output(std::string _file) : filename(_file){};
-
-  // video_output &operator<<(String file) { safeToVideoFile(videocstr, file); }
-
-  video_output &operator<<(framevector _videocstr) {
-    safeToVideoFile(_videocstr, filename);
-    return *this;
-  }
-
-  // video_output &operator<<(cimarron::post::reframing _ref) {
-  //   safeToVideoFile(_ref.getFrameVector(), filename);
-  //   return *this;
+  //
+  // void safeImageToFrameVector(cv::Mat _frame) {
+  //   safeImageToFrameVector(from_opencv<vuchar3>(_frame));
   // }
-  // video_output &operator<<(framevector _videocstr, String file) {
-  //   safeToVideoFile(_videocstr, file);
-  //   return *this;
+  // void safeImageToFrameVector(frame _frame) { lazy.push_back(_frame); }
+  // void safeLazy(std::string file) {
+  //   if (lazy.size() > 0)
+  //     safeToVideoFile(lazy, file);
   // }
-  void safeImageToFrameVector(cv::Mat _frame) {
-    safeImageToFrameVector(from_opencv<vuchar3>(_frame));
-  }
-  void safeImageToFrameVector(frame _frame) { lazy.push_back(_frame); }
-  void safeLazy(std::string file) {
-    if (lazy.size() > 0)
-      safeToVideoFile(lazy, file);
-  }
 
-  void safe(framevector _f, std::string _file) { safeToVideoFile(_f, _file); }
+  void set(framevector const &_f, std::string _file) {
+    frames = _f;
+    filename = _file;
+  }
+  void set(framevector const &_f) {
+    std::cout << "vo.set: " << (int)_f[0].domain().ncols() << std::endl;
+    frames = _f;
+    std::cout << "vo.set2: " << (int)frames[0].domain().ncols() << std::endl;
+  }
+  void flush() { safeToVideoFile(frames, filename); }
 
 private:
   void safeToVideoFile(framevector _frames, std::string file) {
-    // TODO SAFE FRAMES TO VIDEO
-    // Videooutput does not work yet
     cv::VideoWriter outputVideo;
     // cv::Size S = cv::Size((int)_frames[0].domain().nrows(),
     //                       (int)_frames[0].domain().ncols());
@@ -75,7 +66,6 @@ private:
                 << std::endl;
       throw std::invalid_argument("Videooutput error!");
     }
-    // outputVideo << to_opencv(_frames[0]);/
     std::cout << "Framevector safe: " << _frames.size() << std::endl;
     for (frame f : _frames) {
       auto fr = clone(f, _border = 0);

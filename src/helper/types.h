@@ -91,4 +91,11 @@ struct globalDeltaImage {
   globalDeltaImage(){};
 };
 using globalDeltaData = std::vector<globalDeltaImage>;
+
+// Stream structs
+struct framesAndGlobalMotionData {
+  framevector frames;
+  globalDeltaData gdd;
+};
+
 #endif

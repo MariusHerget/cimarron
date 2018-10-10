@@ -12,12 +12,10 @@ namespace analysis {
 class movementAggregation {
 private:
   motionData lme; // localMotionEstimation
-  framevector &frames;
   frameDeltaData aggregatedLocalMF;
 
 public:
-  movementAggregation(framevector &_frames, motionData _lme)
-      : frames(_frames), lme(_lme) {
+  movementAggregation(motionData _lme) : lme(_lme) {
     aggregatedLocalMF = compareLocalMD();
     for (auto a : aggregatedLocalMF) {
       if (a.deltaVectors.size() > 0)

@@ -14,7 +14,7 @@ namespace cimarron {
 namespace analysis {
 class localMotionEstimation {
 private:
-  framevector &frames;
+  const framevector &frames;
   std::vector<cv::Rect> trackingAreas;
   std::vector<camShiftTracker> camShiftTrackers;
   int _vmin, _vmax, _smin;
@@ -22,9 +22,11 @@ private:
   double sizeTrackingAreas = 0.25;
 
 public:
-  localMotionEstimation(framevector &_frames, int vmin = 10, int vmax = 255,
-                        int smin = 50)
+  localMotionEstimation(framevector const &_frames, int vmin = 10,
+                        int vmax = 255, int smin = 50)
       : frames(_frames) {
+
+    std::cout << "localMotionEstimation: " << _frames.size() << std::endl;
     auto f = frames[0];
     _vmin = vmin;
     _vmax = vmax;
@@ -80,7 +82,6 @@ public:
   };
 
   motionData estimateBlockWise(int boxSize) {
-    cimarron::post::video_output vo;
     motionData md;
 
     int n = 0;
@@ -160,12 +161,7 @@ public:
       cv::imshow("Tracking Areas", image);
       cv::waitKey(1);
       fnumber++;
-      // vo.safeImageToFrameVector(image);
     }
-    // return std::vector<int, int, int>(0, 0, 0);
-    // cimarron::helper::createDir("./tmp/");
-    // cimarron::helper::createDir("./tmp/results/");
-    // vo.safeLazy("./tmp/results/output-tracked.avi");
     return md;
   }
 

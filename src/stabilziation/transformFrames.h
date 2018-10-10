@@ -43,11 +43,13 @@ public:
       performPositionShift(resized, gdi.deltaVector);
       // gdi.deltaVector.deltaAngle = 45;
       performRotation(resized, gdi.deltaVector);
-      auto fret = vpp::from_opencv<unsigned char>(resized);
-      cv::imshow("transformFrames", resized);
+      auto fret = vpp::from_opencv<vuchar3>(resized);
+      cv::imshow("transformFrames", to_opencv(fret));
       cv::waitKey(1);
-      tframes.push_back(fr);
+      tframes.push_back(fret);
     }
+    std::cout << "applyTransformation vo: " << (int)tframes[0].domain().ncols()
+              << std::endl;
     return tframes;
   };
 

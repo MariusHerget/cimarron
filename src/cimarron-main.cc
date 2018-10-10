@@ -11,13 +11,14 @@
 #include <vpp/vpp.hh>
 
 #include "analysis/analysis.h"
-#include "helper/stream.h"
 #include "helper/types.h"
 #include "postprocessing/reframing.h"
 #include "postprocessing/video_output.h"
 #include "preprocessing/preprocessing.h"
 #include "stabilziation/stabilziation.h"
 #include "test/symbols.hh"
+
+#include "helper/stream.h"
 
 using namespace iod;
 using namespace vpp;
@@ -44,7 +45,11 @@ int main(int argc, const char *argv[]) {
       _record_video = std::string());
 
   framevector frames;
-  opts.video.c_str() >> cimarron::pre::preprocessing();
+  auto t = opts.video.c_str() >> cimarron::pre::preprocessing() >>
+           cimarron::analysis::analysis() >>
+           cimarron::stabilziation::stabilziation() >>
+           cimarron::post::video_output(argv[2]);
+  t.flush();
   // std::cout << "Input: " << _video << "\nOutput: " << _outputLocation;
   // cimarron::pre::preprocessing pre(opts.video.c_str());
   // auto frames = pre.getFrameVector();
@@ -59,6 +64,4 @@ int main(int argc, const char *argv[]) {
   // vo.safe(finFrames, argv[2]);
   // how can I do this:
   // vo << ref << frames;
-  while (true)
-    ;
 }

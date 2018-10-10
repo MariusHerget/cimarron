@@ -15,14 +15,14 @@ namespace analysis {
 class movementAnalysis {
 private:
   frameDeltaData fdd;
-  framevector &frames;
+  const framevector &frames;
 
   deltaVector threshHoldCameraErrors;
   float threshHoldSimiliartyTV = 0.7;
   float threshHoldSimilar = 0.75;
 
 public:
-  movementAnalysis(framevector &_frames, frameDeltaData _fdd)
+  movementAnalysis(framevector const &_frames, frameDeltaData _fdd)
       : frames(_frames), fdd(_fdd) {
     threshHoldCameraErrors = deltaVector(frames[0].domain().ncols() * 0.10,
                                          frames[0].domain().nrows() * 0.10);

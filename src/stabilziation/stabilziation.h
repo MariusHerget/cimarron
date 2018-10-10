@@ -17,12 +17,18 @@ private:
   cimarron::stabilziation::transformFrames transFrames;
 
 public:
+  stabilziation() = default;
   stabilziation(framevector _frames, globalDeltaData _gdd)
       : frames(_frames), gdd(_gdd) {
     transFrames = cimarron::stabilziation::transformFrames(frames, gdd);
   };
 
   framevector getTransformedFramevector() {
+    return transFrames.applyTransformation();
+  }
+
+  decltype(auto) stabilze(framevector _frames, globalDeltaData _gdd) {
+    transFrames = cimarron::stabilziation::transformFrames(_frames, _gdd);
     return transFrames.applyTransformation();
   }
 

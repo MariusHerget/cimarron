@@ -23,8 +23,13 @@ public:
   };
 
   decltype(auto) getFrameVector() { return frames; }
-  friend framevector &operator>>(framevector &streamframes, const clc_str &s);
-  // framevector &operator>>(const clc_str &videocstr, framevector
+
+  decltype(auto) prepare(clc_str const &path) {
+    extractFrames ef(path);
+    return ef.getFrames(frames);
+  }
+  // friend framevector &operator>>(framevector &streamframes, const clc_str
+  // &s); framevector &operator>>(const clc_str &videocstr, framevector
   // &streamframes) {
   //   std::cout << "Works!";
   // }
@@ -40,12 +45,12 @@ private:
 } // namespace pre
 } // namespace cimarron
 
-framevector &operator>>(framevector &streamframes, const clc_str &s) {
-  std::cout << "Works";
-  return streamframes;
-}
-
-framevector &cimarron::pre::preprocessing::operator<<(const clc_str &s) {
-  extractFrames ef(s);
-  return ef.getFrames(streamframes);
-}
+// framevector &operator>>(framevector &streamframes, const clc_str &s) {
+//   std::cout << "Works";
+//   return streamframes;
+// }
+//
+// framevector &cimarron::pre::preprocessing::operator<<(const clc_str &s) {
+//   extractFrames ef(s);
+//   return ef.getFrames(streamframes);
+// }

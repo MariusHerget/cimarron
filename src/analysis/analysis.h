@@ -21,13 +21,23 @@ public:
   globalDeltaData gdd;
 
 public:
+  analysis() = default;
   analysis(framevector _frames) : frames(_frames) {
     localMotionEstimation lme(frames);
     auto localmotion = lme.estimateBlockWise(boxSize);
-    movementAggregation mAggro(frames, localmotion);
+    movementAggregation mAggro(localmotion);
     movementAnalysis mAnal(frames, mAggro.getDelta());
     gdd = mAnal.calcGlobalMotion();
   };
+
+  decltype(auto) analyze(framevector const &_f) {
+    std::cout << "analyze: " << _f.size() << std::endl;
+    localMotionEstimation lme(_f);
+    auto localmotion = lme.estimateBlockWise(boxSize);
+    movementAggregation mAggro(localmotion);
+    movementAnalysis mAnal(_f, mAggro.getDelta());
+    return mAnal.calcGlobalMotion();
+  }
 
 private:
 };
