@@ -134,21 +134,34 @@ public:
               color = cv::Scalar(0, 0, (i * 2) % 255);
             try {
               if (md[i].trackingVectors.size() > 0)
-                if (md[i - 1].trackingVectors.size() > 0)
+                if (md[i - 1].trackingVectors.size() > 0) {
+                  auto olastframe = o;
+                  if (md[i].trackingVectors[o].index !=
+                      md[i - 1].trackingVectors[olastframe].index) {
+                    for (int k = 0; k < md[i - 1].trackingVectors.size(); k++)
+                      if (md[i].trackingVectors[o].index ==
+                          md[i - 1].trackingVectors[k].index) {
+                        olastframe = k;
+                      } else {
+                        olastframe = -1;
+                      }
+                  }
                   if (md[i].trackingVectors[o].trackingVector.center.x != 0 &&
-                      md[i].trackingVectors[o].trackingVector.center.y != 0)
+                      md[i].trackingVectors[o].trackingVector.center.y != 0 &&
+                      olastframe != -1)
                     cv::line(
                         image,
                         cv::Point(
                             md[i].trackingVectors[o].trackingVector.center.x,
                             md[i].trackingVectors[o].trackingVector.center.y),
                         cv::Point(md[i - 1]
-                                      .trackingVectors[o]
+                                      .trackingVectors[olastframe]
                                       .trackingVector.center.x,
                                   md[i - 1]
-                                      .trackingVectors[o]
+                                      .trackingVectors[olastframe]
                                       .trackingVector.center.y),
                         color, 1);
+                }
             } catch (...) {
               // Catch all exceptions – dangerous!!!
               // Respond (perhaps only partially) to the exception, then
