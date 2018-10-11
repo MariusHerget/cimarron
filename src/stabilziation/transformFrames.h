@@ -15,12 +15,14 @@ class transformFrames {
 private:
   framevector frames;
   globalDeltaData gdd;
+  std::vector<char> performStabi;
 
 public:
 public:
   transformFrames() = default;
-  transformFrames(framevector _frames, globalDeltaData _gdd)
-      : frames(_frames), gdd(_gdd) {}
+  transformFrames(framevector _frames, globalDeltaData _gdd,
+                  std::vector<char> ps)
+      : frames(_frames), gdd(_gdd), performStabi(ps) {}
 
   framevector applyTransformation() {
     auto resize = calcMaxTransformation();
@@ -29,8 +31,8 @@ public:
 
   framevector applyTransformation(deltaVector resize) {
     framevector tframes;
-    std::cout << "applyTransformation(): " << (int)std::abs(resize.x) << "/"
-              << (int)std::abs(resize.y) << std::endl;
+    int first = true;
+    int first2 = true;
     for (auto gdi : gdd) {
       auto fr = clone(frames[gdi.frameindex], _border = 0);
       // auto frame_graylevel = rgb_to_graylevel<unsigned char>(fr);
@@ -40,16 +42,39 @@ public:
                          (int)std::abs(resize.y), (int)std::abs(resize.x),
                          (int)std::abs(resize.x), cv::BORDER_CONSTANT,
                          cv::Scalar(-1, -1, -1));
-      performPositionShift(resized, gdi.deltaVector);
-      // gdi.deltaVector.deltaAngle = 45;
-      performRotation(resized, gdi.deltaVector);
+      if (performStabi.size() != 0) {
+        for (auto p : performStabi)
+          switch (p) {
+          case 'P':
+          case 'p':
+            if (first)
+              std::cout << "performPositionShift"
+                        << "\n";
+            performPositionShift(resized, gdi.deltaVector);
+            first = false;
+            break;
+          case 'R':
+          case 'r':
+            if (first2)
+              std::cout << "performRotation"
+                        << "\n";
+            performRotation(resized, gdi.deltaVector);
+            first2 = false;
+            break;
+          default:
+            break;
+          }
+      } else {
+        performPositionShift(resized, gdi.deltaVector);
+        performRotation(resized, gdi.deltaVector);
+        std::cout << "Perform p and r"
+                  << "\n";
+      }
       auto fret = vpp::from_opencv<vuchar3>(resized);
       cv::imshow("transformFrames", to_opencv(fret));
       cv::waitKey(1);
       tframes.push_back(fret);
     }
-    std::cout << "applyTransformation vo: " << (int)tframes[0].domain().ncols()
-              << std::endl;
     return tframes;
   };
 

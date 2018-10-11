@@ -15,9 +15,13 @@ private:
 public:
   extractFrames(clc_str _videocstr) : videocstr(_videocstr){};
 
-  decltype(auto) getFrames(framevector &frames) {
+  framevector getFrames(framevector &frames) { return getFrames(frames, -1); }
+  framevector getFrames(framevector &frames, const int maxFrames) {
+    int i = 0;
     foreach_videoframe(videocstr) | [&](const image2d<vuchar3> &frame_cv) {
-      frames.push_back(clone(frame_cv, _border = 0));
+      if (i <= maxFrames || maxFrames == -1)
+        frames.push_back(clone(frame_cv, _border = 0));
+      i++;
     };
     return frames;
   }
@@ -30,8 +34,9 @@ public:
     int us_cpt = 0;
     foreach_videoframe(videocstr) | [&](const image2d<vuchar3> &frame_cv) {
       auto frame = clone(frame_cv, _border = 3);
-      // std::cout << "frame_cv is " << type_name<decltype(frame_cv)>() << '\n';
-      // std::cout << "frame is " << type_name<decltype(frame)>() << '\n';
+      // std::cout << "frame_cv is " << type_name<decltype(frame_cv)>() <<
+      // '\n'; std::cout << "frame is " << type_name<decltype(frame)>() <<
+      // '\n';
       fill_border_mirror(frame);
       auto frame_graylevel = rgb_to_graylevel<unsigned char>(frame);
       timer t;

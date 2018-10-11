@@ -17,7 +17,7 @@ private:
 public:
 public:
   reframing() = default;
-  reframing(framevector _frames, globalDeltaData _gdd)
+  reframing(framevector &_frames, globalDeltaData &_gdd)
       : frames(_frames), gdd(_gdd) {
     cols = std::vector<int>(_frames[0].domain().ncols(), 0);
     rows = std::vector<int>(_frames[0].domain().nrows(), 0);
@@ -46,6 +46,34 @@ public:
     return tframes;
   }
 
+  decltype(auto) mask(framevector const &_f, globalDeltaData const &_gdd) {
+    frames = _f;
+    gdd = _gdd;
+    auto resize = calcMaxTransformation();
+    auto ffirst = clone(_f[0], _border = 0);
+    cv::Mat mask =
+        cv::Mat::zeros(to_opencv(ffirst).size(), to_opencv(ffirst).type());
+    for (int c = 0; c < mask.cols; c++)
+      for (int r = 0; r < mask.rows; r++)
+        if ((r > resize.y * 2 && r < mask.rows - resize.y * 2) &&
+            (c > resize.x * 2 && c < mask.cols - resize.x * 2))
+          mask.at<cv::Vec3b>(cv::Point(c, r)) = cv::Vec3b{255, 255, 255};
+
+    framevector reframed;
+    for (auto frame : _f) {
+      auto freframe = clone(frame, _border = 0);
+      auto freframec = to_opencv(freframe);
+      cv::Mat out;
+      freframec.copyTo(out, mask);
+      reframed.push_back(vpp::from_opencv<vuchar3>(out));
+    }
+    return reframed;
+    // mask [resize.x:_f[0].domain().ncols() + resize.x,
+    // resize.y:_f[0].domain().nrows() + resize.y] = 255; auto masked_img =
+    // cv::bitwise_and(f[0], f[0], mask = mask)
+  }
+  // cv::Size(_f[0].domain().ncols() - resize.x * 2,
+  //                         _f[0].domain().nrows() - resize.y * 2)
 private:
   deltaVector calcMaxTransformation() {
     float xmax = 0., ymax = 0.;

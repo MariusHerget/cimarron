@@ -15,12 +15,15 @@ private:
   framevector frames;
   globalDeltaData gdd;
   cimarron::stabilziation::transformFrames transFrames;
+  std::vector<char> performStabi;
 
 public:
   stabilziation() = default;
+  stabilziation(std::vector<char> ps) : performStabi(ps){};
   stabilziation(framevector _frames, globalDeltaData _gdd)
       : frames(_frames), gdd(_gdd) {
-    transFrames = cimarron::stabilziation::transformFrames(frames, gdd);
+    transFrames =
+        cimarron::stabilziation::transformFrames(frames, gdd, performStabi);
   };
 
   framevector getTransformedFramevector() {
@@ -28,7 +31,8 @@ public:
   }
 
   decltype(auto) stabilze(framevector _frames, globalDeltaData _gdd) {
-    transFrames = cimarron::stabilziation::transformFrames(_frames, _gdd);
+    transFrames =
+        cimarron::stabilziation::transformFrames(_frames, _gdd, performStabi);
     return transFrames.applyTransformation();
   }
 

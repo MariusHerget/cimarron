@@ -17,11 +17,6 @@ private:
 public:
   movementAggregation(motionData _lme) : lme(_lme) {
     aggregatedLocalMF = compareLocalMD();
-    for (auto a : aggregatedLocalMF) {
-      if (a.deltaVectors.size() > 0)
-        std::cout << a.frameindex << "(" << a.deltaVectors[0].TVindex << ": "
-                  << a.deltaVectors[0].deltaAngle << ") ";
-    }
     std::cout << "movementAggregation finished" << std::endl;
   };
 

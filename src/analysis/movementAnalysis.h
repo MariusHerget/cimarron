@@ -159,15 +159,3 @@ private:
 };
 } // namespace analysis
 } // namespace cimarron
-
-// {deltaVectors = {{deltaPosition = {x = 0, y = 0}, deltaAngle = 0.0556488037,
-//                 deltaArea = -1.55371094, TVindex = 0},
-//                {deltaPosition = {x = -1, y = -6}, deltaAngle = 2.01100159,
-//                 deltaArea = 41.1201172, TVindex = 1},
-//                {deltaPosition = {x = 0, y = 0}, deltaAngle = -0.129081726,
-//                 deltaArea = 18.5166016, TVindex = 2},
-//                {deltaPosition = {x = 0, y = 0}, deltaAngle = 0.426063538,
-//                 deltaArea = -33.0087891, TVindex = 3},
-//                {deltaPosition = {x = 0, y = 0}, deltaAngle = -0.134384155,
-//                 deltaArea = -20.0195312, TVindex = 4}},
-//  frameindex = 0, framenext = 1},

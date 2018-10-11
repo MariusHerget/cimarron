@@ -12,10 +12,12 @@ class preprocessing {
 private:
   clc_str videocstr;
   framevector frames;
+  const int maxFrame;
 
 public:
-  preprocessing() = default;
-  preprocessing(clc_str _videocstr) : videocstr(_videocstr) {
+  preprocessing() : maxFrame(-1){};
+  preprocessing(int _maxFrame) : maxFrame(_maxFrame){};
+  preprocessing(clc_str _videocstr) : videocstr(_videocstr), maxFrame(-1) {
     extractFrames ef(videocstr);
     frames = ef.getFrames(frames);
     std::cout << "Framevector: " << countFrames() << std::endl;
@@ -26,7 +28,7 @@ public:
 
   decltype(auto) prepare(clc_str const &path) {
     extractFrames ef(path);
-    return ef.getFrames(frames);
+    return ef.getFrames(frames, maxFrame);
   }
   // friend framevector &operator>>(framevector &streamframes, const clc_str
   // &s); framevector &operator>>(const clc_str &videocstr, framevector

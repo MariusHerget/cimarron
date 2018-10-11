@@ -23,10 +23,8 @@ private:
 
 public:
   localMotionEstimation(framevector const &_frames, int vmin = 10,
-                        int vmax = 255, int smin = 50)
+                        int vmax = 255, int smin = 8)
       : frames(_frames) {
-
-    std::cout << "localMotionEstimation: " << _frames.size() << std::endl;
     auto f = frames[0];
     _vmin = vmin;
     _vmax = vmax;
@@ -170,7 +168,10 @@ public:
               throw;
             }
           }
-
+      // cv::Mat imagebj;
+      // cv::cvtColor(camShiftTrackers[0].backproj, image, cv::COLOR_GRAY2BGR);
+      // cv::imshow("Tracking Areas Backproj", imagebj);
+      // cv::waitKey(1);
       cv::imshow("Tracking Areas", image);
       cv::waitKey(1);
       fnumber++;

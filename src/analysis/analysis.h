@@ -31,7 +31,6 @@ public:
   };
 
   decltype(auto) analyze(framevector const &_f) {
-    std::cout << "analyze: " << _f.size() << std::endl;
     localMotionEstimation lme(_f);
     auto localmotion = lme.estimateBlockWise(boxSize);
     movementAggregation mAggro(localmotion);

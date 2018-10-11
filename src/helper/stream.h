@@ -19,14 +19,26 @@ decltype(auto) operator>>(framevector const &f,
 
 decltype(auto) operator>>(framesAndGlobalMotionData const &fgdd,
                           cimarron::stabilziation::stabilziation stab)
-    -> framevector {
+    -> framesAndGlobalMotionData {
   std::cout << fgdd.frames.size() << std::endl;
-  return stab.stabilze(fgdd.frames, fgdd.gdd);
+  auto tf = stab.stabilze(fgdd.frames, fgdd.gdd);
+  return framesAndGlobalMotionData{tf, fgdd.gdd};
+}
+
+decltype(auto) operator>>(framesAndGlobalMotionData const &f,
+                          cimarron::post::reframing re) -> framevector {
+  return re.mask(f.frames, f.gdd);
+}
+
+decltype(auto) operator>>(framesAndGlobalMotionData const &fgdd,
+                          cimarron::post::video_output vo)
+    -> cimarron::post::video_output {
+  vo.set(fgdd.frames);
+  return std::move(vo);
 }
 
 decltype(auto) operator>>(framevector const &f, cimarron::post::video_output vo)
     -> cimarron::post::video_output {
-  std::cout << "operator vo: " << (int)f[0].domain().ncols() << std::endl;
   vo.set(f);
   return std::move(vo);
 }

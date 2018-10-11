@@ -11,6 +11,7 @@
 #include <vpp/vpp.hh>
 
 #include "analysis/analysis.h"
+#include "analysis/smoothGDD.h"
 #include "helper/types.h"
 #include "postprocessing/reframing.h"
 #include "postprocessing/video_output.h"
@@ -45,23 +46,10 @@ int main(int argc, const char *argv[]) {
       _record_video = std::string());
 
   framevector frames;
-  auto t = opts.video.c_str() >> cimarron::pre::preprocessing() >>
+  std::vector<char> ps{'p', 'r'};
+  auto t = opts.video.c_str() >> cimarron::pre::preprocessing(200) >>
            cimarron::analysis::analysis() >>
-           cimarron::stabilziation::stabilziation() >>
-           cimarron::post::video_output(argv[2]);
+           cimarron::stabilziation::stabilziation(ps) >>
+           cimarron::post::reframing() >> cimarron::post::video_output(argv[2]);
   t.flush();
-  // std::cout << "Input: " << _video << "\nOutput: " << _outputLocation;
-  // cimarron::pre::preprocessing pre(opts.video.c_str());
-  // auto frames = pre.getFrameVector();
-  // cimarron::analysis::analysis ana(frames);
-  // cimarron::stabilziation::stabilziation stab(frames, ana.gdd);
-  // auto finFrames = stab.getTransformedFramevector();
-  // // cimarron::post::reframing ref(finFrames, ana.gdd);
-  // // auto reframeFrames = ref.reframe();
-  // // DEBUG POINT
-  // cimarron::post::video_output vo;
-  // // Currently this:
-  // vo.safe(finFrames, argv[2]);
-  // how can I do this:
-  // vo << ref << frames;
 }
