@@ -49,47 +49,35 @@ New technologies emerge each year. In the last years espacially phones and small
 
 The general idea of video stabilization is to counter, smoothen or to minimize unwanted shakes. In general video motion stabilization can be classified in three categories: mechanical based, optical based and electronical based. Instead of using specific hardware like the first two methods, the electronical approach uses computing power to implement image processing techniques in the  postproduction step. \cite{blockTang}
 
-In order to compensate the unwanted movement of the camera motion can be described in various forms. \textit{Translation} is the simplest form of expression. In this concept direct, linear movement of a single point is described as the distance it covered within a certain time. This can enhanced with the combination of \textit{rotational motion}.  In comparision to translational movement it specifies the angle a point / body covers in a given timeframe.
-
-\begin{figure}
-\begin{subfigure}[c]{0.45\textwidth}
-\begin{center}
-    \begin{tikzpicture}
-    \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
-    \draw[black, fill = black] (-2,-0.5) circle [radius=.5];
-    \draw[black, pattern=dots] (1,-0.5) circle [radius=.5];
-    \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- (0.25,-0.5);
-    \end{tikzpicture}
-\end{center}
-\subcaption{Translation motion}
-\end{subfigure}
-
-\begin{subfigure}[c]{0.45\textwidth}
-\begin{center}
-    \begin{tikzpicture}
-    \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
-    \draw[black, fill = black] (-2.5,0) rectangle (-1.5,-1);
-    \draw[black, fill = black,rotate around={45:(1,-0.5)}] (0.5,0) rectangle (1.5,-1);
-    \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- (0.15,-0.5);
-    \end{tikzpicture}
-\end{center}
-\subcaption{Rotational motion}
-\end{subfigure}
-
-\caption{Differnt motion models}
+In order to compensate the unwanted movement of the camera motion can be described in various forms. \textit{Translation} is the simplest form of expression. In this concept direct, linear movement of a single point is described as the distance it covered within a certain time. This can enhanced with the combination of \textit{rotational motion}.  In comparision to translational movement it specifies the angle a point / body covers in a given timeframe. Examples can be seen in \cref{fig:motionmodels}.
+\begin{figure}\centering
+    \begin{minipage}{.45\textwidth}\centering
+        \begin{tikzpicture}[scale=1]
+        \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
+        \draw[black, fill = black] (-2,-0.5) circle [radius=.5];
+        \draw[black, pattern=dots] (1,-0.5) circle [radius=.5];
+        \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- (0.25,-0.5);
+        \end{tikzpicture}
+        \subcaption{Translational motion}
+    \end{minipage}
+    \begin{minipage}{.45\textwidth}\centering
+        \begin{tikzpicture}[scale=1]
+        \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
+        \draw[black, fill = black] (-2.5,0) rectangle (-1.5,-1);
+        \draw[black, pattern=dots,rotate around={45:(1,-0.5)}] (0.5,0) rectangle (1.5,-1);
+        \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- (0.15,-0.5);
+        \end{tikzpicture}
+        \subcaption{Rotational motion}
+    \end{minipage}
+    \caption{Differnt motion models}
+    \label{fig:motionmodels}
 \end{figure}
 
 
-
-
-
-
-
-\section{System diagram}
-\input{includes/planing-system-diagram}
 \begin{landscape}
-
+    % \section{System diagram}
     \input{includes/full-system-diagram}
+    % \input{includes/full-system-diagram}
 \end{landscape}
 \section{Coding Concepts}
 \input{includes/concepts}
