@@ -23,7 +23,7 @@ private:
 
 public:
   localMotionEstimation(framevector const &_frames, int vmin = 10,
-                        int vmax = 255, int smin = 8)
+                        int vmax = 160, int smin = 25)
       : frames(_frames) {
     auto f = frames[0];
     _vmin = vmin;

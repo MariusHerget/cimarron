@@ -1,0 +1,210 @@
+\documentclass{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage[orientation=landscape,size=custom,width=16,height=9,scale=0.5,debug]{beamerposter}
+
+\usepackage[ngerman]{babel}
+\usepackage[ngerman]{isodate}
+\usepackage[parfill]{parskip}
+
+
+\usepackage{ltablex} % mix out of tabularx and longtable
+\usepackage{multirow}
+
+\usepackage{graphicx}
+% \usepackage{wrapfig}
+\usepackage{subcaption} %To create subfigures
+% \usepackage{subfig} %To create subfigures
+\usepackage{placeins} % FloatBarrier
+% \usepackage{floatrow}
+\graphicspath{ {./images/} }
+
+\usepackage[]{geometry}
+\usepackage{pdflscape}
+\usepackage{booktabs}
+
+\usepackage[most]{tcolorbox}
+\usepackage{cleveref}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing,shapes,arrows,positioning}
+\usetikzlibrary{positioning}
+\usetikzlibrary{backgrounds}
+\usetikzlibrary{patterns}
+\usetikzlibrary{calc}
+\usetikzlibrary{fit}
+
+\tikzstyle{input} = [coordinate]
+\tikzstyle{output} = [coordinate]
+\tikzstyle{block} = [rectangle, draw, text width=5em, text centered,  minimum height=4em]
+\tikzstyle{storage} = [cylinder, shape border rotate=90, aspect=0.25, draw]
+\tikzstyle{label} = [text width=2.4cm, text centered]
+
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=C++,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  morekeywords={vector},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+
+
+\definecolor{lmugreen}{RGB}{50,55,44}
+
+\setbeamercolor{title}{fg=lmugreen}
+\setbeamercolor{titlelike}{fg=lmugreen}
+%\setbeamertemplate{itemize items}[circle]
+\setbeamertemplate{itemize items}{\color{black}$\blacktriangleright$}
+%\setbeamertemplate{footline}[frame number]
+
+\setbeamertemplate{footline}[text line]{%
+  \parbox{\linewidth}{\vspace*{-8pt}c3particles\hfill\insertshortauthor\hfill\insertframenumber/\inserttotalframenumber}}
+\setbeamertemplate{navigation symbols}{}
+
+
+%Information to be included in the title page:
+\title{\textbf{Cimarron}\\Stabilisation of videos in modern \texttt{C++}}
+\subtitle{Praktikumsabschlusspr\"asentation}
+\author{Marius Herget}
+\date{\today}
+\institute{Institut f\"ur Informatik, LMU M\"unchen}
+
+\usebackgroundtemplate%
+{%
+    \includegraphics[width=\paperwidth,height=\paperheight]{images/bg-empty.pdf}%
+}
+\setbeamertemplate{frametitle}[default][center]
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}
+\frametitle{Zielsetzung}
+\begin{description}
+    \item[Videostabilisierung] Methodik um ungewollte Bewegungen in Video zu reduzieren
+    \item[\texttt{C++}] eignet sich besonders gut, da formale Konzept logisch implementiert und der Speicher effizient verwaltet werden kann
+    \item[Ziel] Entwicklung einer Programmierabstraktion zum Kompensieren von ungewollten Bewegungen (Translation und Rotation) mit Hilfe von Feature Tracking
+\end{description}
+\end{frame}
+
+\begin{frame}
+
+\frametitle{Bewegungsmuster}
+\begin{figure}\centering
+    \begin{minipage}{.45\textwidth}\centering
+        \begin{tikzpicture}[scale=1]
+        \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
+        \draw[black, fill = black] (-2,-0.5) circle [radius=.5];
+        \draw[black, pattern=dots] (1,-0.5) circle [radius=.5];
+        \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- node[above]{\small$\overrightarrow{v} = (6,0)$} (0.25,-0.5);
+        \end{tikzpicture}
+        \subcaption{Translational motion}
+    \end{minipage}
+    \begin{minipage}{.45\textwidth}\centering
+        \begin{tikzpicture}[scale=1]
+        \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
+
+        \draw[black, fill = black]  (-2.5,0) rectangle (-1.5,-1);
+        \draw[black, pattern=dots,rotate around={45:(1,-0.5)}] (0.5,0) rectangle (1.5,-1);
+        % \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- (0.15,-0.5);
+        \draw[-stealth,  black, line width=0.5mm] (-1.75,0.25) arc  (100:0:0.5)node[above right]{\small$45^\circ$};
+        \end{tikzpicture}
+        \subcaption{Rotational motion}
+    \end{minipage}
+    \caption{Differnt motion models}
+    \label{fig:motionmodels}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Stabilisierung Theorie}
+\begin{figure}\centering
+    \begin{minipage}{.45\textwidth}\centering
+        \begin{tikzpicture}[scale=1]
+        \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
+        \draw[black, fill = black] (-2,-0.5) circle [radius=.5];
+        \draw[black, pattern=dots] (1,-0.5) circle [radius=.5];
+        \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- node[above]{\small$\overrightarrow{v} = (6,0)$} (0.25,-0.5);
+        \draw[thick, white, ->, line width=0.001mm] (-1.25,1.1) -- node[above]{\small$\overrightarrow{v} = (6,0)$} (-2.75,1.1);
+        \end{tikzpicture}
+        \subcaption{Erkennung}
+    \end{minipage}
+    \begin{minipage}{.45\textwidth}\centering
+        \begin{tikzpicture}[scale=1]
+        \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
+        \draw[black, fill = gray] (-2,-0.5) circle [radius=.5];
+        \draw[thick, blue, ->, line width=0.5mm] (-1.25,1.1) -- node[above]{\small$\overrightarrow{v} = (-6,0)$} (-2.75,1.1);
+
+        \draw[step=0.5cm,blue,thin] (-5,-2) grid (-1,1);
+        \draw[blue, pattern=dots] (-2,-0.5) circle [radius=.5];
+
+
+        \end{tikzpicture}
+        \subcaption{Gegenmassnahme}
+    \end{minipage}
+    \caption{Translationsstabilisierung}
+    \label{fig:motionmodels}
+\end{figure}
+\end{frame}
+%
+\begin{frame}
+\frametitle{Stabilisierung Theorie}
+\begin{figure}\centering
+    \begin{minipage}{.4\textwidth}\centering
+        \begin{tikzpicture}[scale=1]
+        \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
+
+        \draw[black, fill = black]  (-2.5,0) rectangle (-1.5,-1);
+        \draw[black, pattern=dots,rotate around={45:(1,-0.5)}] (0.5,0) rectangle (1.5,-1);
+        % \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- (0.15,-0.5);
+        \draw[-stealth,  black, line width=0.5mm] (-1.75,0.25) arc  (100:0:0.5)node[above right]{\small$45^\circ$};
+        \end{tikzpicture}
+        \subcaption{Erkennung}
+    \end{minipage}
+    \begin{minipage}{.58\textwidth}\centering
+        \begin{tikzpicture}[scale=1]
+        \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
+        \draw[step=0.5cm,blue,rotate around={45:(1,-0.5)},thin] (-3,-2) grid (2,1);
+
+        \draw[black, fill = black]  (-2.5,0) rectangle (-1.5,-1);
+        \draw[blue, pattern=dots,] (0.5,0) rectangle (1.5,-1);
+        % \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- (0.15,-0.5);
+        \draw[-stealth,  blue, line width=0.5mm] (-2.7,-1.8) arc  (80:275:0.5)node[below left]{\small$-45^\circ$};
+        \end{tikzpicture}
+        \subcaption{Gegenmassnahme}
+    \end{minipage}
+    \caption{Rotationsstabilisierung}
+    \label{fig:motionmodels}
+\end{figure}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Ähnlichkeit}
+\begin{description}
+    \item[Vektoren] Cosine similarity
+    \[cos\_sim = \frac{A \cdot B}{\Vert A\Vert \Vert B\Vert} = \frac{\sum\limits_{i=1}^{n} A_iB_i}{\sqrt{\sum\limits_{i=1}^{n}A_i^2} \sqrt{\sum\limits_{i=1}^{n}B_i^2}}\]
+    \item[Winkel] Prozentuale Veraenderung
+\end{description}
+\end{frame}
+\end{document}
