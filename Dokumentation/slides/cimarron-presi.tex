@@ -36,12 +36,14 @@
 \usetikzlibrary{patterns}
 \usetikzlibrary{calc}
 \usetikzlibrary{fit}
+\usepackage[absolute,overlay]{textpos}
 
 \tikzstyle{input} = [coordinate]
 \tikzstyle{output} = [coordinate]
 \tikzstyle{block} = [rectangle, draw, text width=5em, text centered,  minimum height=4em]
 \tikzstyle{storage} = [cylinder, shape border rotate=90, aspect=0.25, draw]
 \tikzstyle{label} = [text width=2.4cm, text centered]
+\tikzstyle{wideblock} = [rectangle, draw, text width=7em, text centered,  minimum height=4em]
 
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
@@ -77,12 +79,12 @@
 %\setbeamertemplate{footline}[frame number]
 
 \setbeamertemplate{footline}[text line]{%
-  \parbox{\linewidth}{\vspace*{-8pt}c3particles\hfill\insertshortauthor\hfill\insertframenumber/\inserttotalframenumber}}
+  \parbox{\linewidth}{\vspace*{-8pt}cimarron\hfill\insertshortauthor\hfill\insertframenumber/\inserttotalframenumber}}
 \setbeamertemplate{navigation symbols}{}
 
 
 %Information to be included in the title page:
-\title{\textbf{Cimarron}\\Stabilisation of videos in modern \texttt{C++}}
+\title{\textbf{Cimarron}\\Stabilization of videos in modern \texttt{C++}}
 \subtitle{Praktikumsabschlusspr\"asentation}
 \author{Marius Herget}
 \date{\today}
@@ -94,6 +96,8 @@
 }
 \setbeamertemplate{frametitle}[default][center]
 
+\newcommand{\currentSD}{}
+
 \begin{document}
 
 \frame{\titlepage}
@@ -101,14 +105,35 @@
 \begin{frame}
 \frametitle{Zielsetzung}
 \begin{description}
-    \item[Videostabilisierung] Methodik um ungewollte Bewegungen in Video zu reduzieren
-    \item[\texttt{C++}] eignet sich besonders gut, da formale Konzept logisch implementiert und der Speicher effizient verwaltet werden kann
-    \item[Ziel] Entwicklung einer Programmierabstraktion zum Kompensieren von ungewollten Bewegungen (Translation und Rotation) mit Hilfe von Feature Tracking
+    \item[Videostabilisierung] Methodik um ungewollte Bewegungen (Wackler) der Kamera in einem Video zu reduzieren
+    \item[\texttt{C++}] eignet sich besonders gut, da Konzepte formuliert werden koennen, auf deren Grundlage eine Anwendung implementiert werden kann und die Speicherverwaltung deterministisch und minimal ist.
+    \item[Ziel] Entwicklung einer Programmierabstraktion zum Kompensieren von ungewollten Bewegungen (Translation und Rotation) der Kamera mit Hilfe von Feature Tracking
 \end{description}
 \end{frame}
 
 \begin{frame}
+\begin{center}
+    \textbf{\huge DEMO}
+\end{center}
+\end{frame}
 
+\begin{frame}
+    \frametitle{System Diagram}
+    \begin{figure}[h!]
+        \resizebox{\textwidth}{!}{%
+        \input{../includes/full-system-diagram}}
+        \caption{High-level system diagram}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Feature Tracking}
+
+    \renewcommand{\currentSD}{\draw[red,thick,dotted] ($(analysis1.north west)+(-0.2,0.2)$)  rectangle ($(analysis1.south east)+(0.2,-0.2)$);}
+    \input{./images/sd-mini}
+\end{frame}
+
+\begin{frame}
 \frametitle{Bewegungsmuster}
 \begin{figure}\centering
     \begin{minipage}{.45\textwidth}\centering
@@ -118,7 +143,7 @@
         \draw[black, pattern=dots] (1,-0.5) circle [radius=.5];
         \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- node[above]{\small$\overrightarrow{v} = (6,0)$} (0.25,-0.5);
         \end{tikzpicture}
-        \subcaption{Translational motion}
+        \subcaption{Translation}
     \end{minipage}
     \begin{minipage}{.45\textwidth}\centering
         \begin{tikzpicture}[scale=1]
@@ -129,9 +154,9 @@
         % \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- (0.15,-0.5);
         \draw[-stealth,  black, line width=0.5mm] (-1.75,0.25) arc  (100:0:0.5)node[above right]{\small$45^\circ$};
         \end{tikzpicture}
-        \subcaption{Rotational motion}
+        \subcaption{Rotation}
     \end{minipage}
-    \caption{Differnt motion models}
+    % \caption{Zwei }
     \label{fig:motionmodels}
 \end{figure}
 \end{frame}
@@ -160,7 +185,7 @@
 
 
         \end{tikzpicture}
-        \subcaption{Gegenmassnahme}
+        \subcaption{Inverse}
     \end{minipage}
     \caption{Translationsstabilisierung}
     \label{fig:motionmodels}
@@ -191,20 +216,64 @@
         % \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- (0.15,-0.5);
         \draw[-stealth,  blue, line width=0.5mm] (-2.7,-1.8) arc  (80:275:0.5)node[below left]{\small$-45^\circ$};
         \end{tikzpicture}
-        \subcaption{Gegenmassnahme}
+        \subcaption{Inverse}
     \end{minipage}
     \caption{Rotationsstabilisierung}
     \label{fig:motionmodels}
 \end{figure}
 \end{frame}
 
-
 \begin{frame}
 \frametitle{Ähnlichkeit}
 \begin{description}
-    \item[Vektoren] Cosine similarity
+    \item[Vektoren] Kosinus-Ähnlichkeit
     \[cos\_sim = \frac{A \cdot B}{\Vert A\Vert \Vert B\Vert} = \frac{\sum\limits_{i=1}^{n} A_iB_i}{\sqrt{\sum\limits_{i=1}^{n}A_i^2} \sqrt{\sum\limits_{i=1}^{n}B_i^2}}\]
     \item[Winkel] Prozentuale Veraenderung
 \end{description}
 \end{frame}
+\note[itemize]{
+\item Kosinus-Ähnlichkeit ist ein Maß für die Ähnlichkeit zweier Vektoren
+\item Kosinus des Winkels zwischen beiden Vektoren
+\item 1:  Abhängigkeit // 0: Unabhängigkeit // -1: Exakt gegenteil
+\item $[-1\leq cos\_sim \leq,1]$
+\item  Attribut-Vektoren a {\displaystyle \mathbf {a} } \mathbf {a} und b {\displaystyle \mathbf {b} } \mathbf{b}
+\item Der Kosinus zweier Vektoren bestimmt sich aus dem Standardskalarprodukt: $a\cdot b = \Vert A\Vert\Vert B\Vert cos \Theta$\\[1.5em]
+\item $A \cdot B$ -> Skalarprodukt
+\item $A \cdot B$ -> Norm:  Abbildung die dem Vektor eine Zahl zuordnet, die auf gewisse Weise die Größe des Objekts beschreiben soll
+}
+
+\begin{frame}
+\frametitle{Berechnung Inverse}
+    \textbf{Vektoren}:
+    % \begin{enumerate}
+        % \item
+        Berechne die Cosine similarity von jedem Tracking window mit jedem anderen TrackingVector:
+        \[cos\_sim(\forall transVector(delta(f(n), f(n+1))) )\]
+    % \end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{Konzepte}
+\end{frame}
+
+\begin{frame}
+\frametitle{Konzeptdefinition}
+\end{frame}
+
+
+\begin{frame}
+\begin{center}
+    \textbf{\huge BACKUP}
+\end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{CamShift}
+    \begin{figure}[h!]
+        \resizebox{\textwidth}{!}{%
+        \input{../includes/camshift-system-diagram}}
+        \caption{Detailed system diagram of \textit{Track}}
+    \end{figure}
+\end{frame}
+
 \end{document}
