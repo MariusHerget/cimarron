@@ -1,7 +1,4 @@
 
-\begin{figure}[h!]
-% \centered\vspace{-4.5cm}\vspace{-4.5cm}
-\small\centering\vspace{-0.5cm}
 \begin{tikzpicture}[node distance=2cm and 2.55cm,auto]\centering
     \node [input, name=input] {};
     \node [block, right= of input] (pre1) {Decode};
@@ -19,48 +16,12 @@
      \draw[->](input) -- node {Video}(pre1);
      \draw[->](pre1) -- node[label] {Frames} node[below]{$f(n)$}(analysis1);
      \draw[->](analysis1) -- node[label]{Motiondata} node[below]{$m(n)$}(analysis2);
-     \draw[->](analysis2) -- node[label]{Delta Tracking} node[below]{$d(n, n+1)$}(analysis3);
-     \draw[->](analysis3) -- node[label,left]{Delta Tracking} node[right]{$d(n, n+1)$}(analysis4);
-     \draw[->](analysis4) -- node[label,above]{Global Delta Tracking} node[below]{$gd(n, n+1)$}(stabi);
+     \draw[->](analysis2) -- node[label]{Delta Tracking} node[below]{$d(n-1, n)$}(analysis3);
+     \draw[->](analysis3) -- node[label,left]{Delta Tracking} node[right]{$d(n-1, n)$}(analysis4);
+     \draw[->](analysis4) -- node[label,above]{Global Delta Tracking} node[below]{$gd(n-1, n)$}(stabi);
      \draw[->](stabi) -- node[label,above]{Frames} node[below]{$f(n)$}(post1);
      \draw[->](post1) -- node[label,above]{Frames} node[below]{$f(n)$}(post2);
 
 
      \draw[->](post2) -- node[above]{Video}(output);
 \end{tikzpicture}
-\caption{High-level system diagram}
-\end{figure}
-
-\tikzstyle{wideblock} = [rectangle, draw, text width=7em, text centered,  minimum height=4em]
-\begin{figure}\centering\vspace{-4.5cm}
-    \tcbox[enhanced, sharp corners, boxsep=1mm, boxrule=1mm,colframe=gray!10!white,
-        colback=white,
-        borderline={2pt}{-1pt}{gray,dotted}]
-        {\begin{tikzpicture}[scale=0.6,node distance=1cm and 2.5cm,auto]
-            \node [input, name=input] {};
-            \node [block, right= of input] (pre1) {Initialize tracking areas};
-            \node [wideblock, right= of pre1] (pre2) {Histogram \& Backprojection};
-            \node [block, right= of pre2] (pre3) {Normali-sation};
-            \node [block, below= of pre3] (pre4) {Mean-Shift};
-            \node [wideblock, left= of pre4] (pre5) {Adjust size of tacking area and rotation};
-            \node [input, left=of pre5] (output) {t};
-
-            \draw[->](input) -- node[label]{Frames}node[below]{$f(n)$}(pre1);
-            \draw[->](pre1) -- node[label]{Frames}node[below]{$f(n)$}(pre2);
-
-
-            \draw[->](pre2) -- node[label]{$bj(f(n))$}node[below]{$hsv(f(n))$}(pre3);
-
-            \draw[->](pre3) -- node[label, left]{$bj(f(n))$}node[right]{$hsv(f(n))$}(pre4);
-
-
-            \draw[->](pre4) -- node[label, above]{Tackwindow}node[below]{$tv(f(n), ta)$}(pre5);
-            \draw[->](pre5)  |- ++(0,-3cm) --node[label, above]{Tackwindow}node[below]{$tv(f(n), ta)$} ++(8.8cm,0) -- (pre4);
-
-
-            \draw[->](pre5) -- node[label, above]{Motiondata}node[below]{$m(n)$}(output);
-        \end{tikzpicture}
-        }
-    \caption{Track: CamShift algorithms}
-    \label{fig:motionmodels}
-\end{figure}

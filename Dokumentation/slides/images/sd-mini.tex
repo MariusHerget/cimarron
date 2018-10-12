@@ -21,9 +21,9 @@
      \draw[->](input) -- node {Video}(pre1);
      \draw[->](pre1) -- node[label] {Frames} node[below]{$f(n)$}(analysis1);
      \draw[->](analysis1) -- node[label]{Motiondata} node[below]{$m(n)$}(analysis2);
-     \draw[->](analysis2) -- node[label]{Delta Tracking} node[below]{$d(n, n+1)$}(analysis3);
-     \draw[->](analysis3) -- node[label,above]{Delta Tracking} node[below]{$d(n, n+1)$}(analysis4);
-     \draw[->](analysis4) -- node[label,above]{Global Delta Tracking} node[below]{$gd(n, n+1)$}(stabi);
+     \draw[->](analysis2) -- node[label]{Delta Tracking} node[below]{$d(n-1, n)$}(analysis3);
+     \draw[->](analysis3) -- node[label,above]{Delta Tracking} node[below]{$d(n-1, n)$}(analysis4);
+     \draw[->](analysis4) -- node[label,above]{Global Delta Tracking} node[below]{$gd(n-1, n)$}(stabi);
      \draw[->](stabi) -- node[label,above]{Frames} node[below]{$f(n)$}(post1);
      \draw[->](post1) -- node[label,above]{Frames} node[below]{$f(n)$}(post2);
 

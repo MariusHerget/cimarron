@@ -12,16 +12,20 @@
 \usepackage[parfill]{parskip}
 
 
+
+\usepackage[backend=bibtex,style=numeric]{biblatex}
+\addbibresource{../lib/research.bib}
+
 \usepackage{ltablex} % mix out of tabularx and longtable
 \usepackage{multirow}
 
 \usepackage{graphicx}
-% \usepackage{wrapfig}
+\usepackage{wrapfig}
 \usepackage{subcaption} %To create subfigures
 % \usepackage{subfig} %To create subfigures
 \usepackage{placeins} % FloatBarrier
 % \usepackage{floatrow}
-\graphicspath{ {./images/} }
+\graphicspath{ {../images/} }
 
 \usepackage[]{geometry}
 \usepackage{pdflscape}
@@ -75,8 +79,10 @@
 \setbeamercolor{title}{fg=lmugreen}
 \setbeamercolor{titlelike}{fg=lmugreen}
 %\setbeamertemplate{itemize items}[circle]
-\setbeamertemplate{itemize items}{\color{black}$\blacktriangleright$}
+% \setbeamertemplate{itemize items}{\color{black}$\blacktriangleright$}
 %\setbeamertemplate{footline}[frame number]
+\setbeamercolor{description item}{fg=black!80!black}
+\setbeamerfont{description item}{size=\footnotesize}
 
 \setbeamertemplate{footline}[text line]{%
   \parbox{\linewidth}{\vspace*{-8pt}cimarron\hfill\insertshortauthor\hfill\insertframenumber/\inserttotalframenumber}}
@@ -128,99 +134,140 @@
 
 \begin{frame}
 \frametitle{Feature Tracking}
-
+    \begin{columns}
+    \begin{column}{0.3\textwidth}
+        \begin{figure}
+            \includegraphics[scale=0.125]{tracking-example.jpg}
+            \caption{Beispiel}
+        \end{figure}
+    \end{column}
+    \begin{column}{0.67\textwidth}
+            \textbf{CAMshift} Algorithmus von OpenCV \cite{OpenCVMe72:online}:\\[0.7em]
+            % \begin{enumerate}
+                \textbf{1.} Meanshift\\
+                \textbf{2.} Fenstergroesse und Orientierung anpassen\\
+                \textbf{3.} Wiederhole 1. bis gewuenschte Genauigkeit erreicht ist
+            % \end{enumerate}
+    \end{column}
+    \end{columns}
+    % SMALL SD
     \renewcommand{\currentSD}{\draw[red,thick,dotted] ($(analysis1.north west)+(-0.2,0.2)$)  rectangle ($(analysis1.south east)+(0.2,-0.2)$);}
     \input{./images/sd-mini}
 \end{frame}
 
 \begin{frame}
 \frametitle{Bewegungsmuster}
-\begin{figure}\centering
-    \begin{minipage}{.45\textwidth}\centering
-        \begin{tikzpicture}[scale=1]
-        \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
-        \draw[black, fill = black] (-2,-0.5) circle [radius=.5];
-        \draw[black, pattern=dots] (1,-0.5) circle [radius=.5];
-        \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- node[above]{\small$\overrightarrow{v} = (6,0)$} (0.25,-0.5);
-        \end{tikzpicture}
-        \subcaption{Translation}
-    \end{minipage}
-    \begin{minipage}{.45\textwidth}\centering
-        \begin{tikzpicture}[scale=1]
-        \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
+    \begin{figure}\centering
+        \begin{minipage}{.45\textwidth}\centering
+            \begin{tikzpicture}[scale=1]
+            \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
+            \draw[black, fill = black] (-2,-0.5) circle [radius=.5];
+            \draw[black, pattern=dots] (1,-0.5) circle [radius=.5];
+            \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- node[above]{\small$\overrightarrow{v} = (6,0)$} (0.25,-0.5);
+            \end{tikzpicture}
+            \subcaption{Translation}
+        \end{minipage}
+        \begin{minipage}{.45\textwidth}\centering
+            \begin{tikzpicture}[scale=1]
+            \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
 
-        \draw[black, fill = black]  (-2.5,0) rectangle (-1.5,-1);
-        \draw[black, pattern=dots,rotate around={45:(1,-0.5)}] (0.5,0) rectangle (1.5,-1);
-        % \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- (0.15,-0.5);
-        \draw[-stealth,  black, line width=0.5mm] (-1.75,0.25) arc  (100:0:0.5)node[above right]{\small$45^\circ$};
-        \end{tikzpicture}
-        \subcaption{Rotation}
-    \end{minipage}
-    % \caption{Zwei }
-    \label{fig:motionmodels}
-\end{figure}
+            \draw[black, fill = black]  (-2.5,0) rectangle (-1.5,-1);
+            \draw[black, pattern=dots,rotate around={45:(1,-0.5)}] (0.5,0) rectangle (1.5,-1);
+            % \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- (0.15,-0.5);
+            \draw[-stealth,  black, line width=0.5mm] (-1.75,0.25) arc  (100:0:0.5)node[above right]{\small$45^\circ$};
+            \end{tikzpicture}
+            \subcaption{Rotation}
+        \end{minipage}
+        % \caption{Zwei }
+        \label{fig:motionmodels}
+    \end{figure}
+    % SMALL SD
+    \renewcommand{\currentSD}{\draw[red,thick,dotted] ($(analysis2.north west)+(-0.2,0.2)$)  rectangle ($(analysis2.south east)+(0.2,-0.2)$);}
+    \input{./images/sd-mini}
+\end{frame}
+\note[itemize]{
+\item Perspektive fehlt: Kann man aber implementieren ueber die Groesse des Tracking Windows und abhangigkeiten von den TVs: Inverse ist berechnbar
+}
+
+\begin{frame}
+\frametitle{Bewegungserkennung}
+    \begin{description}
+        \item[Lokal] $\Delta(trackingVector(F(n-1)), trackingVectorF(n))$
+        \item[Global]
+    \end{description}
+    % SMALL SD
+    \renewcommand{\currentSD}{\draw[red,thick,dotted] ($(analysis2.north west)+(-0.2,0.4)$)  rectangle ($(analysis4.south east)+(0.2,-0.4)$);}
+    \input{./images/sd-mini}
 \end{frame}
 
 \begin{frame}
 \frametitle{Stabilisierung Theorie}
-\begin{figure}\centering
-    \begin{minipage}{.45\textwidth}\centering
-        \begin{tikzpicture}[scale=1]
-        \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
-        \draw[black, fill = black] (-2,-0.5) circle [radius=.5];
-        \draw[black, pattern=dots] (1,-0.5) circle [radius=.5];
-        \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- node[above]{\small$\overrightarrow{v} = (6,0)$} (0.25,-0.5);
-        \draw[thick, white, ->, line width=0.001mm] (-1.25,1.1) -- node[above]{\small$\overrightarrow{v} = (6,0)$} (-2.75,1.1);
-        \end{tikzpicture}
-        \subcaption{Erkennung}
-    \end{minipage}
-    \begin{minipage}{.45\textwidth}\centering
-        \begin{tikzpicture}[scale=1]
-        \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
-        \draw[black, fill = gray] (-2,-0.5) circle [radius=.5];
-        \draw[thick, blue, ->, line width=0.5mm] (-1.25,1.1) -- node[above]{\small$\overrightarrow{v} = (-6,0)$} (-2.75,1.1);
+    \begin{figure}\centering
+        \begin{minipage}{.45\textwidth}\centering
+            \begin{tikzpicture}[scale=1]
+            \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
+            \draw[black, fill = black] (-2,-0.5) circle [radius=.5];
+            \draw[black, pattern=dots] (1,-0.5) circle [radius=.5];
+            \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- node[above]{\small$\overrightarrow{v} = (6,0)$} (0.25,-0.5);
+            \draw[thick, white, ->, line width=0.001mm] (-1.25,1.1) -- node[above]{\small$\overrightarrow{v} = (6,0)$} (-2.75,1.1);
+            \end{tikzpicture}
+            \subcaption{Erkennung}
+        \end{minipage}
+        \begin{minipage}{.45\textwidth}\centering
+            \begin{tikzpicture}[scale=1]
+            \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
+            \draw[black, fill = gray] (-2,-0.5) circle [radius=.5];
+            \draw[thick, blue, ->, line width=0.5mm] (-1.25,1.1) -- node[above]{\small$\overrightarrow{v} = (-6,0)$} (-2.75,1.1);
 
-        \draw[step=0.5cm,blue,thin] (-5,-2) grid (-1,1);
-        \draw[blue, pattern=dots] (-2,-0.5) circle [radius=.5];
+            \draw[step=0.5cm,blue,thin] (-5,-2) grid (-1,1);
+            \draw[blue, pattern=dots] (-2,-0.5) circle [radius=.5];
 
 
-        \end{tikzpicture}
-        \subcaption{Inverse}
-    \end{minipage}
-    \caption{Translationsstabilisierung}
-    \label{fig:motionmodels}
-\end{figure}
+            \end{tikzpicture}
+            \subcaption{Inverse}
+        \end{minipage}
+        \caption{Translationsstabilisierung}
+        \label{fig:motionmodels}
+    \end{figure}
+    % SMALL SD
+    \renewcommand{\currentSD}{\draw[red,thick,dotted] ($(stabi.north west)+(-0.2,0.2)$)  rectangle ($(stabi.south east)+(0.2,-0.2)$);}
+    \input{./images/sd-mini}
 \end{frame}
 %
 \begin{frame}
 \frametitle{Stabilisierung Theorie}
-\begin{figure}\centering
-    \begin{minipage}{.4\textwidth}\centering
-        \begin{tikzpicture}[scale=1]
-        \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
+\vspace{-1.2em}
+    \begin{figure}\centering
+        \begin{minipage}{.4\textwidth}\centering
+            \begin{tikzpicture}[scale=1]
+            \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
 
-        \draw[black, fill = black]  (-2.5,0) rectangle (-1.5,-1);
-        \draw[black, pattern=dots,rotate around={45:(1,-0.5)}] (0.5,0) rectangle (1.5,-1);
-        % \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- (0.15,-0.5);
-        \draw[-stealth,  black, line width=0.5mm] (-1.75,0.25) arc  (100:0:0.5)node[above right]{\small$45^\circ$};
-        \end{tikzpicture}
-        \subcaption{Erkennung}
-    \end{minipage}
-    \begin{minipage}{.58\textwidth}\centering
-        \begin{tikzpicture}[scale=1]
-        \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
-        \draw[step=0.5cm,blue,rotate around={45:(1,-0.5)},thin] (-3,-2) grid (2,1);
+            \draw[black, fill = black]  (-2.5,0) rectangle (-1.5,-1);
+            \draw[black, pattern=dots,rotate around={45:(1,-0.5)}] (0.5,0) rectangle (1.5,-1);
+            % \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- (0.15,-0.5);
+            \draw[-stealth,  black, line width=0.5mm] (-1.75,0.25) arc  (100:0:0.5)node[above right]{\small$45^\circ$};
+            \end{tikzpicture}
+            \subcaption{Erkennung}
+        \end{minipage}
+        \begin{minipage}{.58\textwidth}\centering
+            \begin{tikzpicture}[scale=1]
+            \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
+            \draw[step=0.5cm,blue,rotate around={45:(1,-0.5)},thin] (-3,-2) grid (2,1);
 
-        \draw[black, fill = black]  (-2.5,0) rectangle (-1.5,-1);
-        \draw[blue, pattern=dots,] (0.5,0) rectangle (1.5,-1);
-        % \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- (0.15,-0.5);
-        \draw[-stealth,  blue, line width=0.5mm] (-2.7,-1.8) arc  (80:275:0.5)node[below left]{\small$-45^\circ$};
-        \end{tikzpicture}
-        \subcaption{Inverse}
-    \end{minipage}
-    \caption{Rotationsstabilisierung}
-    \label{fig:motionmodels}
-\end{figure}
+            \draw[black, fill = black]  (-2.5,0) rectangle (-1.5,-1);
+            \draw[blue, pattern=dots,] (0.5,0) rectangle (1.5,-1);
+            % \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- (0.15,-0.5);
+            \draw[-stealth,  blue, line width=0.5mm] (-2.7,-1.8) arc  (80:275:0.5)node[below left]{\small$-45^\circ$};
+            \end{tikzpicture}
+            \subcaption{Inverse}
+        \end{minipage}
+% \protect\caption[position=left]{Rotationsstabilisierung}
+        % {\hspace*{-2em}\caption{Rotationsstabilisierung}}
+        \label{fig:motionmodels}
+    \end{figure}
+    % SMALL SD
+    \renewcommand{\currentSD}{\draw[red,thick,dotted] ($(stabi.north west)+(-0.2,0.2)$)  rectangle ($(stabi.south east)+(0.2,-0.2)$);}
+    \input{./images/sd-mini}
 \end{frame}
 
 \begin{frame}

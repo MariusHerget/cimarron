@@ -76,7 +76,17 @@ In order to compensate the unwanted movement of the camera motion can be describ
 
 \begin{landscape}
     % \section{System diagram}
-    \input{includes/full-system-diagram}
+    \begin{figure}[h!]
+        % \centered\vspace{-4.5cm}\vspace{-4.5cm}
+        \small\centering\vspace{-0.5cm}
+        \input{includes/full-system-diagram}
+        \caption{High-level system diagram}
+    \end{figure}
+    \begin{figure}\centering\vspace{-4.5cm}
+        \input{includes/camshift-system-diagram}
+        \caption{Track: CamShift algorithms}
+        \label{fig:motionmodels}
+    \end{figure}
     % \input{includes/full-system-diagram}
 \end{landscape}
 \section{Coding Concepts}

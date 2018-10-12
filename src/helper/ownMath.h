@@ -13,9 +13,12 @@ float cosine_similarity(frameDeltaVector *A, frameDeltaVector *B) {
       std::pow(A->deltaPosition.x, 2.0) * std::pow(A->deltaPosition.y, 2.0);
   denom_b +=
       std::pow(B->deltaPosition.x, 2.0) * std::pow(B->deltaPosition.y, 2.0);
-  auto ret = dot / (sqrt(denom_a) * sqrt(denom_b));
+  auto ret = dot / (std::sqrt(denom_a) * std::sqrt(denom_b));
   if (std::isnan(ret))
     return 0.0;
+  if (std::isinf(ret) && ret < 0) // cosine_similarity is [-1, 1] therfore 1 and
+                                  // -1 means similarity
+    return -1.;
   if (std::isinf(ret)) // cosine_similarity is [-1, 1] therfore 1 and -1 means
                        // similarity
     return 1.;

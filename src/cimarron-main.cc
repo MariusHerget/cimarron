@@ -47,9 +47,10 @@ int main(int argc, const char *argv[]) {
 
   framevector frames;
   std::vector<char> ps{'p', 'r'};
-  auto t = opts.video.c_str() >> cimarron::pre::preprocessing(200) >>
+  auto t = opts.video.c_str() >> cimarron::pre::preprocessing(50) >>
            cimarron::analysis::analysis() >>
            cimarron::stabilziation::stabilziation({'p', 'r'}) >>
-           cimarron::post::reframing() >> cimarron::post::video_output(argv[2]);
+           // cimarron::post::reframing() >>
+           cimarron::post::video_output(argv[2]);
   t.flush();
 }

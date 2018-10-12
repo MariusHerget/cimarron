@@ -10,6 +10,8 @@ using namespace s;
 #include "../postprocessing/video_output.h"
 #include "./camShiftTracker.h"
 
+#include <string.h>
+
 namespace cimarron {
 namespace analysis {
 class localMotionEstimation {
@@ -174,6 +176,12 @@ public:
       // cv::waitKey(1);
       cv::imshow("Tracking Areas", image);
       cv::waitKey(1);
+
+      std::string name("");
+      name.append("./tmp/results/");
+      name.append(std::to_string(fnumber));
+      name.append(".jpg");
+      cv::imwrite(name, image);
       fnumber++;
     }
     return md;
