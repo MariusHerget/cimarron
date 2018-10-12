@@ -49,8 +49,8 @@ New technologies emerge each year. In the last years espacially phones and small
 
 The general idea of video stabilization is to counter, smoothen or to minimize unwanted shakes. In general video motion stabilization can be classified in three categories: mechanical based, optical based and electronical based. Instead of using specific hardware like the first two methods, the electronical approach uses computing power to implement image processing techniques in the  postproduction step. \cite{blockTang}
 
-In order to compensate the unwanted movement of the camera motion can be described in various forms. \textit{Translation} is the simplest form of expression. In this concept direct, linear movement of a single point is described as the distance it covered within a certain time. This can enhanced with the combination of \textit{rotational motion}.  In comparision to translational movement it specifies the angle a point / body covers in a given timeframe. Examples can be seen in \cref{fig:motionmodels}.
-\begin{figure}\centering
+In order to compensate the unwanted movement of the camera, motion can be described in various forms. \textit{Translation} is the simplest form of expression. In this concept direct, linear movement of a single point is described as the distance it covered within a certain time. This can enhanced with the combination of \textit{rotational motion}.  In comparision to translational movement it specifies the angle a point / body covers in a given timeframe. Examples can be seen in \cref{fig:motionmodels}.
+\begin{figure}[h!]\centering
     \begin{minipage}{.45\textwidth}\centering
         \begin{tikzpicture}[scale=1]
         \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
@@ -73,22 +73,125 @@ In order to compensate the unwanted movement of the camera motion can be describ
     \label{fig:motionmodels}
 \end{figure}
 
+Another motion model is \textit{perspective}. As well as translational and rotational movement it can be described as vectors and scalars. The inverse of each model can be used as the source for the stabilization.
 
-\begin{landscape}
-    % \section{System diagram}
-    \begin{figure}[h!]
-        % \centered\vspace{-4.5cm}\vspace{-4.5cm}
-        \small\centering\vspace{-0.5cm}
-        \input{includes/full-system-diagram}
-        \caption{High-level system diagram}
-    \end{figure}
-    \begin{figure}\centering\vspace{-4.5cm}
-        \input{includes/camshift-system-diagram}
-        \caption{Track: CamShift algorithms}
-        \label{fig:motionmodels}
-    \end{figure}
-    % \input{includes/full-system-diagram}
-\end{landscape}
+
+\section{Modeling}
+
+\section{Implementation}
+\texttt{Cimarron} is implement in \texttt{C++14} and heavily depends on the \texttt{OpenCV} library.
+\begin{figure}[h!]\centering
+    \resizebox{0.9\textwidth}{!}{\centering%
+    \input{includes/full-system-diagram}
+    \caption{High-level system diagram}
+    \label{sd}}
+\end{figure}
+\Cref{sd} shows the general structure of the application. The differend modules each describe a specific step to achieve a smooth video. The first step is to decode the input video and to extract each frame. Therefore, it uses the \textit{frame} concept described earlier. \textit{Track} is the implementation of the OpenCV Continuously Adaptive Meanshift (CAMshift) algorithm, which is an improved version of the \textit{Meanshift} algorithm. It generates \texttt{motionData} of the tracked objects which are then compared, filtered and aggregated to achieve one global difference vector for each frame of the video. In the end these vectors are used to transform the specific frames to compensate the shaky movement. In the end these modified frames are reframed with a simple, non dynamic mask and encoded in an \textit{avi} videofile.
+
+\subsection{Feature tracking}
+The general concept of \texttt{Cimarron} is to track objects within the frames and follow those throughout the frames. Therefore, the CAMshift algorithm is the best way to implement the tracking. It is based on the Meanshift algorithm, which uses the simple approach of finding the maximum density region of points in a given search window. This data can be be a pixel distribution like histogram backprojection.
+
+Firstly, Meanshift analyses the initial search window and calculates the centroid of the data. Afterwards, it uses this centroid as the new center of the search window and repeats this process, until the center of the area and the new calculated centroid are within a margin of error.
+
+One disadvantage of Meanshift which is adressed by CAMshift ist that the tracking area has always the same size. Therefore, it is not possible to address moving objects which change their size. CAMshift was published by Gary Bradsky in his paper "Computer Vision Face Tracking for Use in a Perceptual User Interface" in 1998 and works in the following steps:
+\begin{enumerate}
+    \item Apply Meanshift until it converges.
+    \item Updates the size of the search window.
+    \item Update the rotation of the search area.
+    \item Repeat step 1. until the required accuracy is met.
+\end{enumerate}
+
+A detailed explanation with specific mathematical formulas can be found in \cite{Bradski98computervision}.
+
+\begin{figure}[ht!]\centering
+    \resizebox{0.9\textwidth}{!}{\centering%
+    \input{includes/camshift-system-diagram}
+    \caption{Detailed system diagram of \texttt{Track}}
+    \label{sd:cam}}
+\end{figure}
+
+\Cref{sd:cam} shows the implementation of the CAMshift algorithm in \texttt{Cimarron}. The nine inital tracking areas are ordered with a $3\times 3$ Grid in the frame and can be seen as the red rectangles in \cref{fig:example:cam}. Each tracking area is indepent and uses special \texttt{camShiftTracker} class.
+
+\begin{figure}\centering
+    \includegraphics[scale=0.35]{images/tracking-example.jpg}
+    \caption{Example frame: tracking}
+    \label{fig:example:cam}
+\end{figure}
+
+The second step is to prepare each frame within the tracker. Therefore, a back projection is used. This methods uses the histogram of the inital tracking area in an image to show up probaibilites of colors may appear in each pixel \cite{OpenCVme45:online}. The steps of creating such this is shown in \cref{lst:prep}:
+\begin{enumerate}
+    \item Transform image in an color space which saves the \textit{hue} of each pixel.
+    \item Extract the hue information to receive a grayscale image and normalize its histogram.
+    \item Use OpenCV's \texttt{calcBackProject}.
+\end{enumerate}
+
+
+\begin{lstlisting}[caption={Preparation for tracking},label=lst:prep]
+cv::cvtColor(image, hsv, CV_BGR2HSV);
+
+cv::inRange(hsv, cv::Scalar(0, _smin, MIN(_vmin, _vmax)),
+        cv::Scalar(180, 256, MAX(_vmin, _vmax)), mask);
+int ch[] = {0, 0};
+hue.create(hsv.size(), hsv.depth());
+cv::mixChannels(&hsv, 1, &hue, 1, ch, 1);
+
+if (_start) {
+    cv::Mat roi(hue, _selection), maskroi(mask, _selection);
+    cv::calcHist(&roi, 1, 0, maskroi, hist, 1, &_hsize, &phranges);
+    cv::normalize(hist, hist, 0, 255, CV_MINMAX);
+    _trackWindow = _selection;
+    _start = false;
+}
+\end{lstlisting}
+
+The result is an color-weighted grayscale projection of the image. \texttt{calcBackProject()} functions as follows:
+\begin{enumerate*}[label= (\roman*)]
+    \item Calculate weigth of each color by the histogram and
+    \item Multiply each color of each pixel with its weigth
+\end{enumerate*}.
+
+From there OpenCV takes it for us by simply calling \texttt{cv::CamShift} with the created back projection, the tacking area and a terminating variable.
+\begin{lstlisting}[caption={CAMshift call},label=lst:cam]
+cv::CamShift(
+    backproj, _trackWindow,
+    cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 10, 1));
+\end{lstlisting}
+
+For each frame and tracking area this process is run through. The result can be seen in \cref{fig:example:cam}. The green rectangles are the tracked elements, the blue ones their bounding rectangles. Small lines indicate their movement so far through the frames.
+
+\subsection{Movement identification of tracked objects}
+The feature tracking returns a \texttt{std::vector<motionVector>} aka \texttt{motionData}. Whereby, \texttt{motionVector} is a struct of all tracking vectors in the frame and its index. This data needs to be transformed in difference vectors between frames. These results should imply how the object moved between two frames.
+
+This is simply achieved by comparing each tracking vector by its corresponding one in the previous frame:
+\[\Delta_{TrackingVector_i(m(n))} = TrackingVector_i(m(n-1)) - TrackingVector_i(m(n))\]
+This results in the difference of following properties \begin{enumerate*}[label= (\roman*)]
+    \item $\delta CenterPoint$, \item $\delta Angle$ and \item $\delta Area$
+\end{enumerate*}. These results are combined to a frame delta data vector.
+
+The next step is to filter tracking errors by simply looking up delta vectors which exceed a threshhold of over $10\%$ movement between two frames and deleting those.
+
+
+
+
+
+
+
+%
+% \begin{landscape}
+%     % \section{System diagram}
+%     \begin{figure}[h!]
+%         % \centered\vspace{-4.5cm}\vspace{-4.5cm}
+%         \small\centering\vspace{-0.5cm}
+%         \input{includes/full-system-diagram}
+%         \caption{High-level system diagram}
+%     \end{figure}
+%     \begin{figure}\centering\vspace{-4.5cm}
+%         \input{includes/camshift-system-diagram}
+%         \caption{Track: CamShift algorithms}
+%         \label{fig:motionmodels}
+%     \end{figure}
+%     % \input{includes/full-system-diagram}
+% \end{landscape}
 \section{Coding Concepts}
 \input{includes/concepts}
 

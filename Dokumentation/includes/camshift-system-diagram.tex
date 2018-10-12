@@ -1,8 +1,10 @@
 
-    \tcbox[enhanced, sharp corners, boxsep=1mm, boxrule=1mm,colframe=gray!10!white,
-        colback=white,
-        borderline={2pt}{-1pt}{gray,dotted}]
-        {\begin{tikzpicture}[scale=0.6,node distance=1cm and 2.5cm,auto]
+    % \tcbox[enhanced, sharp corners, boxsep=1mm,
+    % % boxrule=1mm,colframe=gray!10!white,
+    %     colback=white,
+    %     % borderline={2pt}{-1pt}{gray,dotted}
+    %     ]{
+        \begin{tikzpicture}[scale=0.6,node distance=1cm and 2.5cm,auto]
             \node [input, name=input] {};
             \node [block, right= of input] (pre1) {Initialize tracking areas};
             \node [wideblock, right= of pre1] (pre2) {Histogram \& Backprojection};
@@ -26,4 +28,4 @@
 
             \draw[->](pre5) -- node[label, above]{Motiondata}node[below]{$m(n)$}(output);
         \end{tikzpicture}
-        }
+        % }

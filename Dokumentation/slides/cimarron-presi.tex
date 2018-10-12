@@ -13,11 +13,11 @@
 
 
 
-\usepackage[natbib=true,style=authoryear,backend=bibtex,useprefix=true]{biblatex}
+\usepackage[natbib=true,backend=bibtex,useprefix=true]{biblatex}
 \setbeamercolor*{bibliography entry title}{fg=black}
 \setbeamercolor*{bibliography entry location}{fg=black}
 \setbeamercolor*{bibliography entry note}{fg=black}
-\setbeamertemplate{bibliography item}{}
+\setbeamertemplate{bibliography item}{\insertbiblabel}
 \renewcommand*{\bibfont}{\scriptsize}
 \addbibresource{../lib/research.bib}
 
@@ -305,21 +305,34 @@
 
 \begin{frame}
 \frametitle{Konzepte}
-    \begin{columns}
-    \begin{column}{0.32\textwidth}\centering
-        test
-    \end{column}
-    \begin{column}{0.32\textwidth}\centering
-        test
-    \end{column}
-    \begin{column}{0.32\textwidth}\centering
-        test
-    \end{column}
-    \end{columns}
+    \begin{description}
+        \item[Frame] 2-Dimensionale Matrix zur Speicherung von Pixeldaten \cite{OpenCVcv11:online}
+        \item[TrackingWindow] Rotierendes Rechteck, welches die \textit{Features} verfolgt \cite{OpenCVcv94:online}
+    \end{description}
+    % \begin{columns}
+    % \begin{column}{0.32\textwidth}\centering
+    %     test
+    % \end{column}
+    % \begin{column}{0.32\textwidth}\centering
+    %     test
+    % \end{column}
+    % \begin{column}{0.32\textwidth}\centering
+    %     test
+    % \end{column}
+    % \end{columns}
 \end{frame}
 
 \begin{frame}
-\frametitle{Konzeptdefinition}
+\frametitle{Konzeptdefinition}\centering
+    \begin{table}[]
+    \begin{tabular}{l|l|l|l}
+    \textbf{Concept}  & \textbf{Valid Expressions} & \textbf{Semantics} & \textbf{Dependent Types} \\\hline
+    \multirow{2}{*}{Frame} &                            &                    &                          \\
+                  &                            &                    &                                   \\\hline
+    \multirow{2}{*}{TrackingWindow} &                            &                    &                          \\
+                  &                            &                    &
+    \end{tabular}
+    \end{table}
 \end{frame}
 
 \begin{frame}
