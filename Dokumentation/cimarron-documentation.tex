@@ -42,14 +42,14 @@
 \pagenumbering{arabic}
 
 \section{Idea}
-Video stabilization is used ever since cameras evolved. In the early days physicial stabilization techniques as tripods were used. In the following centuries cameras enhanced step by step. New solid and dynamic methods were invented like steady cams, dollys, shoulder rigs and many more. With the invention of digital photography and videos another possible solutionwas found: digital image stabilization. Different techniques like optical flow analysis or warp stabilization were developed. \texttt{Cimarron} implements such a feature tracking method for motion compensation.
+Video stabilization is used ever since cameras evolved. In the early days, physical stabilization techniques as tripods were used. In the following centuries cameras enhanced step by step. New solid and dynamic methods were invented like steady cams, dollies, shoulder rigs and many more. With the invention of digital photography and videos, another possible solution was found: digital image stabilization. Different techniques like optical flow analysis or warp stabilization were developed. \texttt{Cimarron} implements such a feature tracking method for motion compensation.
 
 \section{Theoratical introduction}\label{sec:thintro}
-New technologies emerge each year. In the last years espacially phones and small cameras were published. Under ideal condition recent smartphone's cameras pictures cannot be distinguished from professional cameras anymore. Nevertheless, a smartphone video is often detectable by its \textit{handheld}, shaky look. As already mentioned within the short introduction different methods can be used to compensate this motion.
+New technologies emerge each year. In the last years, especially phones and small cameras were published. Under ideal condition, recent smartphone's cameras pictures cannot be distinguished from professional cameras anymore. Nevertheless, a smartphone video is often detectable by its \textit{handheld}, shaky look. As already mentioned within the short introduction different methods can be used to compensate this motion.
 
-The general idea of video stabilization is to counter, smoothen or to minimize unwanted shakes. In general video motion stabilization can be classified in three categories: mechanical based, optical based and electronical based. Instead of using specific hardware like the first two methods, the electronical approach uses computing power to implement image processing techniques in the  postproduction step. \cite{blockTang}
+The general idea of video stabilization is to counter, smoothen or to minimize unwanted shakes. In general video, motion stabilization can be classified into three categories: mechanical based, optical based and electronically based. Instead of using specific hardware like the first two methods, the electronic approach uses computing power to implement image processing techniques in the postproduction step. \cite{blockTang}
 
-In order to compensate the unwanted movement of the camera, motion can be described in various forms. \textit{Translation} is the simplest form of expression. In this concept direct, linear movement of a single point is described as the distance it covered within a certain time. This can enhanced with the combination of \textit{rotational motion}.  In comparision to translational movement it specifies the angle a point / body covers in a given timeframe. Examples can be seen in \cref{fig:motionmodels}.
+In order to compensate for the unwanted movement of the camera, motion can be described in various forms. \textit{Translation} is the simplest form of expression. In this concept direct, linear movement of a single point is described as the distance it covered within a certain time. This can be enhanced with the combination of \textit{rotational motion}.  In comparison to the translational movement, it specifies the angle a point/body covers in a given timeframe. Examples can be seen in \cref{fig:motionmodels}.
 \begin{figure}[h!]\centering
     \begin{minipage}{.45\textwidth}\centering
         \begin{tikzpicture}[scale=1]
@@ -75,28 +75,47 @@ In order to compensate the unwanted movement of the camera, motion can be descri
     \label{fig:motionmodels}
 \end{figure}
 
-Another motion model is \textit{perspective}. As well as translational and rotational movement it can be described as vectors and scalars. The inverse of each model can be used as the source for the stabilization.
+Another motion model is \textit{perspective}. As well as the translational and rotational movement it can be described as vectors and scalars. The inverse of each model can be used as the source for the stabilization.
 
 
 \section{Modeling}
 
-\section{Implementation}
-\texttt{Cimarron} is implement in \texttt{C++14} and heavily depends on the \texttt{OpenCV} library.
 \begin{figure}[h!]\centering
-    \resizebox{0.9\textwidth}{!}{\centering%
+    \resizebox{\textwidth}{!}{\centering%
     \input{includes/full-system-diagram}
     \caption{High-level system diagram}
     \label{sd}}
 \end{figure}
-\Cref{sd} shows the general structure of the application. The differend modules each describe a specific step to achieve a smooth video. The first step is to decode the input video and to extract each frame. Therefore, it uses the \textit{frame} concept described earlier. \textit{Track} is the implementation of the OpenCV Continuously Adaptive Meanshift (CAMshift) algorithm, which is an improved version of the \textit{Meanshift} algorithm. It generates \texttt{motionData} of the tracked objects which are then compared, filtered and aggregated to achieve one global difference vector for each frame of the video. In the end these vectors are used to transform the specific frames to compensate the shaky movement. In the end these modified frames are reframed with a simple, non dynamic mask and encoded in an \textit{avi} videofile.
+The system diagram shown in \cref{sd}  concludes to three different simple concepts:
+\begin{description}
+    \item[Frame] n-dimensional matrix \\
+        The frame is used to contain all data for an image. It allows access to the individual pixels, dimensions and some functionality. An object which fulfills this concept can be passed on to every image processing function. The concept can also be found in OpenCV's \texttt{Mat} class.
+    \item[TrackingWindow] rotating rectangle \\
+        The TrackingWindow concept allows to specify an area to visualize and save a tracking area. It saves information about the center point, its size and the rotation.
+    \item[FrameDeltaImage] vector of delta in two frames \\
+        The FrameDeltaImage is the resulting data from comparing two images. It saves information about the two frames and its differences in the tracked objects.
+\end{description}
+
+\begin{table}[ht]
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Expression} & \textbf{Semantics} & \textbf{Equivalent expression}\\ \midrule
+   &  &  \\
+   &  &  \\ \bottomrule
+\end{tabular}
+\end{table}
+
+
+\section{Implementation}
+\texttt{Cimarron} is implement in \texttt{C++14} and heavily depends on the \texttt{OpenCV} library. \Cref{sd} shows the general structure of the application. The different modules each describe a specific step to achieve a smooth video. The first step is to decode the input video and to extract each frame. Therefore, it uses the \textit{frame} concept described earlier. \textit{Track} is the implementation of the OpenCV Continuously Adaptive Meanshift (CAMshift) algorithm, which is an improved version of the \textit{Meanshift} algorithm. It generates \texttt{motionData} of the tracked objects which are then compared, filtered and aggregated to achieve one global difference vector for each frame of the video. In the end, these vectors are used to transform the specific frames to compensate the shaky movement. In the end, these modified frames are reframed with a simple, non-dynamic mask and encoded in an \textit{avi} video file.
 \texttt{Decoding} and \texttt{Encoding} are trivial due to the use of the \texttt{video++} framework and are not discussed in this documentation. More information on these topics can be found in \cite{7115639,matt42vp0:online}.
 
 \subsection{Feature tracking}
-The general concept of \texttt{Cimarron} is to track objects within the frames and follow those throughout the frames. Therefore, the CAMshift algorithm is the best way to implement the tracking. It is based on the Meanshift algorithm, which uses the simple approach of finding the maximum density region of points in a given search window. This data can be be a pixel distribution like histogram backprojection.
+The general concept of \texttt{Cimarron} is to track objects within the frames and follow those throughout the frames. Therefore, the CAMshift algorithm is the best way to implement tracking. It is based on the Meanshift algorithm, which uses the simple approach of finding the maximum density region of points in a given search window. This data can be a pixel distribution like histogram back projection.
 
-Firstly, Meanshift analyses the initial search window and calculates the centroid of the data. Afterwards, it uses this centroid as the new center of the search window and repeats this process, until the center of the area and the new calculated centroid are within a margin of error.
+Firstly, Meanshift analyses the initial search window and calculates the centroid of the data. Afterward, it uses this centroid as the new center of the search window and repeats this process, until the center of the area and the newly calculated centroid are within a margin of error.
 
-One disadvantage of Meanshift which is adressed by CAMshift ist that the tracking area has always the same size. Therefore, it is not possible to address moving objects which change their size. CAMshift was published by Gary Bradsky in his paper "Computer Vision Face Tracking for Use in a Perceptual User Interface" in 1998 and works in the following steps:
+One disadvantage of Meanshift which is addressed by CAMshift ist that the tracking area has always the same size. Therefore, it is not possible to address moving objects which change their size. CAMshift was published by Gary Bradsky in his paper "Computer Vision Face Tracking for Use in a Perceptual User Interface" in 1998 and works in the following steps:
 \begin{enumerate}
     \item Apply Meanshift until it converges.
     \item Updates the size of the search window.
@@ -113,7 +132,7 @@ A detailed explanation with specific mathematical formulas can be found in \cite
     \label{sd:cam}}
 \end{figure}
 
-\Cref{sd:cam} shows the implementation of the CAMshift algorithm in \texttt{Cimarron}. The nine inital tracking areas are ordered with a $3\times 3$ Grid in the frame and can be seen as the red rectangles in \cref{fig:example:cam}. Each tracking area is indepent and uses special \texttt{camShiftTracker} class.
+\Cref{sd:cam} shows the implementation of the CAMshift algorithm in \texttt{Cimarron}. The nine initial tracking areas are ordered with a $3\times 3$ Grid in the frame and can be seen as the red rectangles in \cref{fig:example:cam}. Each tracking area is independent and uses special \texttt{camShiftTracker} class.
 
 \begin{figure}\centering
     \includegraphics[scale=0.35]{images/tracking-example.jpg}
@@ -121,7 +140,7 @@ A detailed explanation with specific mathematical formulas can be found in \cite
     \label{fig:example:cam}
 \end{figure}
 
-The second step is to prepare each frame within the tracker. Therefore, a back projection is used. This methods uses the histogram of the inital tracking area in an image to show up probaibilites of colors may appear in each pixel \cite{OpenCVme45:online}. The steps of creating such this is shown in \cref{lst:prep}:
+The second step is to prepare each frame within the tracker. Therefore, a back projection is used. This method uses the histogram of the initial tracking area in an image to show up probabilities of colors may appear in each pixel \cite{OpenCVme45:online}. The steps of creating such this are shown in \cref{lst:prep}:
 \begin{enumerate}
     \item Transform image in an color space which saves the \textit{hue} of each pixel.
     \item Extract the hue information to receive a grayscale image and normalize its histogram.
@@ -149,8 +168,8 @@ if (_start) {
 
 The result is an color-weighted grayscale projection of the image. \texttt{calcBackProject()} functions as follows:
 \begin{enumerate*}[label= (\roman*)]
-    \item Calculate weigth of each color by the histogram and
-    \item Multiply each color of each pixel with its weigth
+    \item Calculate weight of each color by the histogram and
+    \item Multiply each color of each pixel with its weight
 \end{enumerate*}.
 
 From there OpenCV takes it for us by simply calling \texttt{cv::CamShift} with the created back projection, the tacking area and a terminating variable.
@@ -160,10 +179,10 @@ cv::CamShift(
     cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 10, 1));
 \end{lstlisting}
 
-For each frame and tracking area this process is run through. The result can be seen in \cref{fig:example:cam}. The green rectangles are the tracked elements, the blue ones their bounding rectangles. Small lines indicate their movement so far through the frames.
+For each frame and tracking area, this process is run through. The result can be seen in \cref{fig:example:cam}. The green rectangles are the tracked elements, the blue ones their bounding rectangles. Small lines indicate their movement so far through the frames.
 
 \subsection{Movement identification of tracked objects}
-The feature tracking returns a \texttt{std::vector<motionVector>} aka \texttt{motionData}. Whereby, \texttt{motionVector} is a struct of all tracking vectors in the frame and its index. This data needs to be transformed in difference vectors between frames. These results should imply how the object moved between two frames.
+The feature tracking returns a \texttt{std::vector<motionVector>} aka \texttt{motionData}. Whereby, \texttt{motionVector} is a struct of all tracking vectors in the frame and its index. This data needs to be transformed into difference vectors between frames. These results should imply how the object moved between two frames.
 
 This is simply achieved by comparing each tracking vector by its corresponding one in the previous frame:
 \[\Delta_{TrackingVector_i(m(n))} = TrackingVector_i(m(n-1)) - TrackingVector_i(m(n))\]
@@ -171,13 +190,13 @@ This results in the difference of following properties \begin{enumerate*}[label=
     \item $\delta CenterPoint$, \item $\delta Angle$ and \item $\delta Area$
 \end{enumerate*}. These results are combined to a frame delta data vector.
 
-The next step is to filter tracking errors by simply looking up delta vectors which exceed a threshhold of over $10\%$ movement between two frames and deleting those.
+The next step is to filter tracking errors by simply looking up delta vectors which exceed a threshold of over $10\%$ movement between two frames and deleting those.
 
-Since the goal is to counter shaky movement by its translational and rotational movement, it is important to recognize intentional movement of objects within the frame and shakes of the camera. To achieve this, an aggregation of the delta vectors neebs to be done. The exceptions are: \begin{enumerate*}
+Since the goal is to counter shaky movement by its translational and rotational movement, it is important to recognize the intentional movement of objects within the frame and shakes of the camera. To achieve this, an aggregation of the delta vectors needs to be done. The exceptions are: \begin{enumerate*}
     \item There are tracked objects in the image and \item there is only one tracked object
 \end{enumerate*}. The first case returns the single delta vector as the global delta vector. The second one returns a zero vector which indicates that there is no movement between the images. The general case is that there are multiple motion vectors in each frame and therefore, multiple delta vectors.
 
-In this case each vector is compared on time to each other vector and its similarity in translational and rotational movement is calculated.
+In this case, each vector is compared on time to each other vector and its similarity in translational and rotational movement is calculated.
 \begin{description}
     \item[Vector similarity] is computed by the cosine similarity:
     \[cos\_sim = \frac{A \cdot B}{\Vert A\Vert \Vert B\Vert} = \frac{\sum\limits_{i=1}^{n} A_iB_i}{\sqrt{\sum\limits_{i=1}^{n}A_i^2} \sqrt{\sum\limits_{i=1}^{n}B_i^2}}\]
@@ -195,12 +214,12 @@ denom_b +=
     std::pow(B->deltaPosition.y, 2.0);
 auto ret = dot / (std::sqrt(denom_a) * std::sqrt(denom_b));
 \end{lstlisting}
-    \item[Angle similarity] is simply calculated by the percantage difference between the two angles.\\
+    \item[Angle similarity] is simply calculated by the percentage difference between the two angles.\\
 \end{description}
 
 In the end, the analysis checks whether there are enough delta tracking vectors which are similar:
 \begin{enumerate}
-    \item Count translational and rotational data which exceeds the custom threshhold of similarity (Vectors: $>0.7$, Angles: $<10\%$).
+    \item Count translational and rotational data which exceeds the custom threshold of similarity (Vectors: $>0.7$, Angles: $<10\%$).
     \item If at least $75\%$ of all combinations exceed the similarity threshold, calculate their average value. Otherwise, the delta is zero.
     \item Create a global delta vector with the computed delta data.
 \end{enumerate}
@@ -274,7 +293,7 @@ The implementation is thanks to OpenCV quite simple. Firstly, each frame is resi
     \end{split}
 \end{equation*}
 
-The translational and rotational transformations can be seen in \cref{lst:transform}. \texttt{cv::Mat} fullfills the frame concept and only differs in its memory management. One flaw in the current implementation, is that the image is rotated around its center. A better solution would be calculation the middle of all relevant tracking areas and using this point as center for the rotation.
+The translational and rotational transformations can be seen in \cref{lst:transform}. \texttt{cv::Mat} fulfills the frame concept and only differs in its memory management. One flaw in the current implementation is that the image is rotated around its center. A better solution would be calculation the middle of all relevant tracking areas and using this point as the center for the rotation.
 
 \begin{lstlisting}[caption={Frame transformations},label=lst:transform]
 void positionShift(cv::Mat &image, frameDeltaVector dv) {
@@ -296,9 +315,102 @@ cv::warpAffine(image, image, rot, image.size());
 \end{lstlisting}
 
 \subsection{Reframing}
+The last step of \texttt{Cimarron} is a simple but effective reframing. This is necessary since The frames will be repositioned and therefore leave some areas black. For aesthetic reasons a simple reframing with a mask is implemented which are shown in \cref{lst:refr}.
+
+\begin{lstlisting}[caption={Frame transformations},label=lst:transform]
+decltype(auto) mask(framevector const &_f, globalDeltaData const &_gdd) {
+  auto resize = calcMaxTransformation();
+  auto ffirst = clone(_f[0], _border = 0);
+  cv::Mat mask =
+      cv::Mat::zeros(to_opencv(ffirst).size(), to_opencv(ffirst).type());
+  for (int c = 0; c < mask.cols; c++)
+    for (int r = 0; r < mask.rows; r++)
+      if ((r > resize.y * 2 && r < mask.rows - resize.y * 2) &&
+          (c > resize.x * 2 && c < mask.cols - resize.x * 2))
+        mask.at<cv::Vec3b>(cv::Point(c, r)) = cv::Vec3b{255, 255, 255};
+
+  framevector reframed;
+  for (auto frame : _f) {
+    auto freframe = clone(frame, _border = 0);
+    auto freframec = to_opencv(freframe);
+    cv::Mat out;
+    freframec.copyTo(out, mask);
+    reframed.push_back(vpp::from_opencv<vuchar3>(out));
+  }
+  return reframed;
+}
+\end{lstlisting}
+
+The method takes the maximum positional change in the stabilization and adds a black border to the images. This is established with a mask consisting of an inner white rectangle which has the following size:
+\begin{equation*}\centering
+    \begin{split}
+        s = (width_{stabilized} - max(globalDeltaData_x), height_{stabilized} - max(globalDeltaData_y))
+    \end{split}
+\end{equation*}
+
+Everything out of this area is masked out.
+
+\subsection{Streaming}
+In prepatation for potential pipelining and multi threading \texttt{Cimarron} implements a simple streaming semantics which results in the following semantics:
+\begin{lstlisting}[caption={Cimarron semantics},label=lst:fin]
+auto vo = inputfile >>
+         cimarron::pre::preprocessing(100) >>
+         cimarron::analysis::analysis() >>
+         cimarron::stabilziation::stabilziation({'p', 'r'}) >>
+         cimarron::post::reframing() >>
+         cimarron::post::video_output(outputfilename);
+vo.flush();
+\end{lstlisting}
+
+Whereby, \texttt{preprocessing(100)} implies to only use the first $101$ frames and \texttt{stabilziation({'p', 'r'})} shows that positional and rotational stabilization should be executed. Both variables are optional.
+
 
 \section{Results and future work}
+\begin{figure}[!tbp]
+    \begin{subfigure}[b]{\textwidth}%width=0.199*\textwidth
+        \begin{subfigure}[b]{0.180\textwidth}%width=0.199*\textwidth
+          \includegraphics[width=1\linewidth]{images/results/prestab-0.jpg}
+        \end{subfigure}
+        \begin{subfigure}[b]{0.180\textwidth}%width=0.199*\textwidth
+          \includegraphics[width=1\linewidth]{images/results/prestab-1.jpg}
+        \end{subfigure}
+        \begin{subfigure}[b]{0.180\textwidth}%width=0.199*\textwidth
+          \includegraphics[width=1\linewidth]{images/results/prestab-2.jpg}
+        \end{subfigure}
+        \begin{subfigure}[b]{0.180\textwidth}%width=0.199*\textwidth
+          \includegraphics[width=1\linewidth]{images/results/prestab-3.jpg}
+        \end{subfigure}
+        \begin{subfigure}[b]{0.180\textwidth}%width=0.199*\textwidth
+          \includegraphics[width=1\linewidth]{images/results/prestab-4.jpg}
+        \end{subfigure}
+    \caption{Rawframes}
+    \end{subfigure}
+    \begin{subfigure}[b]{\textwidth}%width=0.199*\textwidth
+        \begin{subfigure}[b]{0.180\textwidth}%width=0.199*\textwidth
+          \includegraphics[width=1\linewidth]{images/results/poststab-0.jpg}
+        \end{subfigure}
+        \begin{subfigure}[b]{0.180\textwidth}%width=0.199*\textwidth
+          \includegraphics[width=1\linewidth]{images/results/poststab-1.jpg}
+        \end{subfigure}
+        \begin{subfigure}[b]{0.180\textwidth}%width=0.199*\textwidth
+          \includegraphics[width=1\linewidth]{images/results/poststab-2.jpg}
+        \end{subfigure}
+        \begin{subfigure}[b]{0.180\textwidth}%width=0.199*\textwidth
+          \includegraphics[width=1\linewidth]{images/results/poststab-3.jpg}
+        \end{subfigure}
+        \begin{subfigure}[b]{0.180\textwidth}%width=0.199*\textwidth
+          \includegraphics[width=1\linewidth]{images/results/poststab-4.jpg}
+        \end{subfigure}
+    \caption{Stabilzed and reframed}
+    \label{fig:results}
+    \end{subfigure}
+    \caption{Results (Frames $0-4$)}
+\end{figure}
 
+The results shown in \cref{fig:results} are quite disappointing. The frames are repositioned and the angles are corrected but it's not finetuned yet. Nevertheless, the application is fully working. The implementation has a high potential and its structure allow easy and fast enhancements.
+
+There are multiple optimizations which should be done in the future. The stabilization is currently really harsh. The jumps between the frames to compensate the motions are too big. This can be optimized by enhancing the feature tracking and or by smoothing out the global delta vectors.
+In addition, the reframing is not optimal. A dynamic solution computing the pixels which are always filled with a frame and resizing to this area could be a great optimization. Another method is presented in \cite{blockTang} where the authors introducing an edge completion method to fill up empty pixels after stabilization.
 
 
 

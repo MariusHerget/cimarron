@@ -25,7 +25,7 @@ private:
 
 public:
   localMotionEstimation(framevector const &_frames, int vmin = 10,
-                        int vmax = 160, int smin = 25)
+                        int vmax = 256, int smin = 55)
       : frames(_frames) {
     auto f = frames[0];
     _vmin = vmin;
@@ -99,6 +99,12 @@ public:
       auto imagec = clone(f, _border = 0);
       fill_border_mirror(imagec);
       auto image = to_opencv(imagec);
+      // DEBUG
+      std::string name("");
+      name.append("./tmp/results/prestab-");
+      name.append(std::to_string(fnumber));
+      name.append(".jpg");
+      cv::imwrite(name, image);
       for (auto blockTV : frameMD.trackingVectors) {
         // Draw tracking areas.
         cv::Point2f vertices2f[4];
@@ -176,19 +182,14 @@ public:
       // cv::waitKey(1);
       cv::imshow("Tracking Areas", image);
       cv::waitKey(1);
-
-      std::string name("");
-      name.append("./tmp/results/");
-      name.append(std::to_string(fnumber));
-      name.append(".jpg");
-      cv::imwrite(name, image);
       fnumber++;
     }
     return md;
   }
 
 private:
-  motionVector imageMotionEstimationBlock(frame f, int boxSize, int fnumber) {
+  motionVector imageMotionEstimationBlock(const frame &f, int boxSize,
+                                          int fnumber) {
     // copy and set current Frame
     auto image = clone(f, _border = 0);
     fill_border_mirror(image);

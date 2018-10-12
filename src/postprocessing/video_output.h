@@ -57,15 +57,22 @@ private:
                 << std::endl;
       throw std::invalid_argument("Videooutput error!");
     }
+    int fnumber = 0;
     for (frame f : _frames) {
       auto fr = clone(f, _border = 0);
       fill_border_mirror(fr);
       cv::imshow("safeToVideoFile", to_opencv(fr));
       cv::waitKey(1);
+      std::string name("");
+      name.append("./tmp/results/poststab-");
+      name.append(std::to_string(fnumber));
+      name.append(".jpg");
+      cv::imwrite(name, to_opencv(fr));
       if (outputVideo.isOpened())
         outputVideo << to_opencv(fr);
       else
         throw std::invalid_argument("Videooutput error!");
+      fnumber++;
     }
     outputVideo.release();
   }

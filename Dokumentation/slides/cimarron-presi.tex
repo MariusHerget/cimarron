@@ -116,7 +116,10 @@
 \begin{frame}
 \frametitle{Zielsetzung}
 \begin{description}
-    \item[Videostabilisierung] Methodik um ungewollte Bewegungen (Wackler) der Kamera in einem Video zu reduzieren
+    \item[Videostabilisierung] Methodik um ungewollte Bewegunge
+    // mask [resize.x:_f[0].domain().ncols() + resize.x,
+    // resize.y:_f[0].domain().nrows() + resize.y] = 255; auto masked_img =
+    // cv::bitwise_and(f[0], f[0], mask = mask)n (Wackler) der Kamera in einem Video zu reduzieren
     \item[\texttt{C++}] eignet sich besonders gut, da Konzepte formuliert werden koennen, auf deren Grundlage eine Anwendung implementiert werden kann und die Speicherverwaltung deterministisch und minimal ist.
     \item[Ziel] Entwicklung einer Programmierabstraktion zum Kompensieren von ungewollten Bewegungen (Translation und Rotation) der Kamera mit Hilfe von Feature Tracking
 \end{description}

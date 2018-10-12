@@ -47,7 +47,7 @@ int main(int argc, const char *argv[]) {
 
   framevector frames;
   std::vector<char> ps{'p', 'r'};
-  auto t = opts.video.c_str() >> cimarron::pre::preprocessing(50) >>
+  auto t = opts.video.c_str() >> cimarron::pre::preprocessing(-1) >>
            cimarron::analysis::analysis() >>
            cimarron::stabilziation::stabilziation({'p', 'r'}) >>
            // cimarron::post::reframing() >>
