@@ -89,6 +89,7 @@ Another motion model is \textit{perspective}. As well as translational and rotat
     \label{sd}}
 \end{figure}
 \Cref{sd} shows the general structure of the application. The differend modules each describe a specific step to achieve a smooth video. The first step is to decode the input video and to extract each frame. Therefore, it uses the \textit{frame} concept described earlier. \textit{Track} is the implementation of the OpenCV Continuously Adaptive Meanshift (CAMshift) algorithm, which is an improved version of the \textit{Meanshift} algorithm. It generates \texttt{motionData} of the tracked objects which are then compared, filtered and aggregated to achieve one global difference vector for each frame of the video. In the end these vectors are used to transform the specific frames to compensate the shaky movement. In the end these modified frames are reframed with a simple, non dynamic mask and encoded in an \textit{avi} videofile.
+\texttt{Decoding} and \texttt{Encoding} are trivial due to the use of the \texttt{video++} framework and are not discussed in this documentation. More information on these topics can be found in \cite{7115639,matt42vp0:online}.
 
 \subsection{Feature tracking}
 The general concept of \texttt{Cimarron} is to track objects within the frames and follow those throughout the frames. Therefore, the CAMshift algorithm is the best way to implement the tracking. It is based on the Meanshift algorithm, which uses the simple approach of finding the maximum density region of points in a given search window. This data can be be a pixel distribution like histogram backprojection.
@@ -264,6 +265,36 @@ As already described in \cref{sec:thintro} the inverse can be used to compensate
             \label{fig:motionmodel:rota}
         \end{figure}
 
+The implementation is thanks to OpenCV quite simple. Firstly, each frame is resized to:
+\begin{equation*}\centering
+    \begin{split}
+        (width_{new}, height_{new}) =\\
+        &(width_{original} + max(globalDeltaData_x),\\
+        &~height_{original} + max(globalDeltaData_y))
+    \end{split}
+\end{equation*}
+
+The translational and rotational transformations can be seen in \cref{lst:transform}. \texttt{cv::Mat} fullfills the frame concept and only differs in its memory management. One flaw in the current implementation, is that the image is rotated around its center. A better solution would be calculation the middle of all relevant tracking areas and using this point as center for the rotation.
+
+\begin{lstlisting}[caption={Frame transformations},label=lst:transform]
+void positionShift(cv::Mat &image, frameDeltaVector dv) {
+// Perform position shift
+cv::Mat trans_mat = (cv::Mat_<double>(2, 3) << 1, 0,
+                     dv.deltaPosition.x, 0,
+                     1, dv.deltaPosition.y);
+cv::warpAffine(image, image, trans_mat, image.size());
+}
+void rotate(cv::Mat &image, frameDeltaVector dv) {
+// Perform rotation
+cv::Point2f center((image.cols - 1) / 2.0,
+                   (image.rows - 1) / 2.0);
+cv::Mat rot = cv::getRotationMatrix2D(center,
+                                    dv.deltaAngle, 1.0);
+
+cv::warpAffine(image, image, rot, image.size());
+}
+\end{lstlisting}
+
 \subsection{Reframing}
 
 \section{Results and future work}
@@ -287,8 +318,8 @@ As already described in \cref{sec:thintro} the inverse can be used to compensate
 %     \end{figure}
 %     % \input{includes/full-system-diagram}
 % \end{landscape}
-\section{Coding Concepts}
-\input{includes/concepts}
+% \section{Coding Concepts}
+% \input{includes/concepts}
 
 
 \printbibliography\cleardoublepage
