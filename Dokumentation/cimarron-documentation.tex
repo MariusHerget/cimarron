@@ -44,7 +44,7 @@
 \section{Idea}
 Video stabilization is used ever since cameras evolved. In the early days physicial stabilization techniques as tripods were used. In the following centuries cameras enhanced step by step. New solid and dynamic methods were invented like steady cams, dollys, shoulder rigs and many more. With the invention of digital photography and videos another possible solutionwas found: digital image stabilization. Different techniques like optical flow analysis or warp stabilization were developed. \texttt{Cimarron} implements such a feature tracking method for motion compensation.
 
-\section{Theoratical introduction}
+\section{Theoratical introduction}\label{sec:thintro}
 New technologies emerge each year. In the last years espacially phones and small cameras were published. Under ideal condition recent smartphone's cameras pictures cannot be distinguished from professional cameras anymore. Nevertheless, a smartphone video is often detectable by its \textit{handheld}, shaky look. As already mentioned within the short introduction different methods can be used to compensate this motion.
 
 The general idea of video stabilization is to counter, smoothen or to minimize unwanted shakes. In general video motion stabilization can be classified in three categories: mechanical based, optical based and electronical based. Instead of using specific hardware like the first two methods, the electronical approach uses computing power to implement image processing techniques in the  postproduction step. \cite{blockTang}
@@ -56,16 +56,18 @@ In order to compensate the unwanted movement of the camera, motion can be descri
         \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
         \draw[black, fill = black] (-2,-0.5) circle [radius=.5];
         \draw[black, pattern=dots] (1,-0.5) circle [radius=.5];
-        \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- (0.25,-0.5);
+        \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- node[above]{\small$\overrightarrow{v} = (6,0)$} (0.25,-0.5);
         \end{tikzpicture}
         \subcaption{Translational motion}
     \end{minipage}
     \begin{minipage}{.45\textwidth}\centering
         \begin{tikzpicture}[scale=1]
         \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
-        \draw[black, fill = black] (-2.5,0) rectangle (-1.5,-1);
+
+        \draw[black, fill = black]  (-2.5,0) rectangle (-1.5,-1);
         \draw[black, pattern=dots,rotate around={45:(1,-0.5)}] (0.5,0) rectangle (1.5,-1);
-        \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- (0.15,-0.5);
+        % \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- (0.15,-0.5);
+        \draw[-stealth,  black, line width=0.5mm] (-1.75,0.25) arc  (100:0:0.5)node[above right]{\small$45^\circ$};
         \end{tikzpicture}
         \subcaption{Rotational motion}
     \end{minipage}
@@ -170,8 +172,101 @@ This results in the difference of following properties \begin{enumerate*}[label=
 
 The next step is to filter tracking errors by simply looking up delta vectors which exceed a threshhold of over $10\%$ movement between two frames and deleting those.
 
+Since the goal is to counter shaky movement by its translational and rotational movement, it is important to recognize intentional movement of objects within the frame and shakes of the camera. To achieve this, an aggregation of the delta vectors neebs to be done. The exceptions are: \begin{enumerate*}
+    \item There are tracked objects in the image and \item there is only one tracked object
+\end{enumerate*}. The first case returns the single delta vector as the global delta vector. The second one returns a zero vector which indicates that there is no movement between the images. The general case is that there are multiple motion vectors in each frame and therefore, multiple delta vectors.
+
+In this case each vector is compared on time to each other vector and its similarity in translational and rotational movement is calculated.
+\begin{description}
+    \item[Vector similarity] is computed by the cosine similarity:
+    \[cos\_sim = \frac{A \cdot B}{\Vert A\Vert \Vert B\Vert} = \frac{\sum\limits_{i=1}^{n} A_iB_i}{\sqrt{\sum\limits_{i=1}^{n}A_i^2} \sqrt{\sum\limits_{i=1}^{n}B_i^2}}\]
+    It shows the the angle between two vector by calculating the dot product of each member of the vector and dividing it by the multiplication of the vector's magnitude. A result of $1$ indicates that the vectors are the same. Otherwise, a result below $0$ shows that the vectors are dissimiliar and an exact $0$ means they are orthogonal.
+\begin{lstlisting}[caption={Cosine similarity},label=lst:cossim]
+float dot = 0.0, denom_a = 0.0, denom_b = 0.0;
+
+dot += A->deltaPosition.x * B->deltaPosition.x +
+       A->deltaPosition.y * B->deltaPosition.y;
+denom_a +=
+    std::pow(A->deltaPosition.x, 2.0) *
+    std::pow(A->deltaPosition.y, 2.0);
+denom_b +=
+    std::pow(B->deltaPosition.x, 2.0) *
+    std::pow(B->deltaPosition.y, 2.0);
+auto ret = dot / (std::sqrt(denom_a) * std::sqrt(denom_b));
+\end{lstlisting}
+    \item[Angle similarity] is simply calculated by the percantage difference between the two angles.\\
+\end{description}
+
+In the end, the analysis checks whether there are enough delta tracking vectors which are similar:
+\begin{enumerate}
+    \item Count translational and rotational data which exceeds the custom threshhold of similarity (Vectors: $>0.7$, Angles: $<10\%$).
+    \item If at least $75\%$ of all combinations exceed the similarity threshold, calculate their average value. Otherwise, the delta is zero.
+    \item Create a global delta vector with the computed delta data.
+\end{enumerate}
+
+\subsection{Stabilization}
+As already described in \cref{sec:thintro} the inverse can be used to compensate movement based on the moving vector. \Cref{fig:motionmodel:trans,fig:motionmodel:rota} show how it can be accomplish.
+
+    \begin{figure}\centering
+        \begin{minipage}{.45\textwidth}\centering
+            \begin{tikzpicture}[scale=1]
+            \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
+            \draw[black, fill = black] (-2,-0.5) circle [radius=.5];
+            \draw[black, pattern=dots] (1,-0.5) circle [radius=.5];
+            \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- node[above]{\small$\overrightarrow{v} = (6,0)$} (0.25,-0.5);
+            \draw[thick, white, ->, line width=0.001mm] (-1.25,1.1) -- node[above]{\small$\overrightarrow{v} = (6,0)$} (-2.75,1.1);
+            \end{tikzpicture}
+            \subcaption{Detection (Tracking)}
+        \end{minipage}
+        \begin{minipage}{.45\textwidth}\centering
+            \begin{tikzpicture}[scale=1]
+            \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
+            \draw[black, fill = gray] (-2,-0.5) circle [radius=.5];
+            \draw[thick, blue, ->, line width=0.5mm] (-1.25,1.1) -- node[above]{\small$\overrightarrow{v}_{inverse} = (-6,0)$} (-2.75,1.1);
+
+            \draw[step=0.5cm,blue,thin] (-5,-2) grid (-1,1);
+            \draw[blue, pattern=dots] (-2,-0.5) circle [radius=.5];
 
 
+            \end{tikzpicture}
+            \subcaption{Inverse}
+        \end{minipage}
+        \caption{Translational compensation}
+        \label{fig:motionmodel:trans}
+    \end{figure}
+
+        \begin{figure}\centering
+            \begin{minipage}{.4\textwidth}\centering
+                \begin{tikzpicture}[scale=1]
+                \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
+
+                \draw[black, fill = black]  (-2.5,0) rectangle (-1.5,-1);
+                \draw[black, pattern=dots,rotate around={45:(1,-0.5)}] (0.5,0) rectangle (1.5,-1);
+                % \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- (0.15,-0.5);
+                \draw[-stealth,  black, line width=0.5mm] (-1.75,0.25) arc  (100:0:0.5)node[above right]{\small$45^\circ$};
+                \end{tikzpicture}
+                \subcaption{Detection (Tracking)}
+            \end{minipage}
+            \begin{minipage}{.58\textwidth}\centering
+                \begin{tikzpicture}[scale=1]
+                \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
+                \draw[step=0.5cm,blue,rotate around={45:(1,-0.5)},thin] (-3,-2) grid (2,1);
+
+                \draw[black, fill = black]  (-2.5,0) rectangle (-1.5,-1);
+                \draw[blue, pattern=dots,] (0.5,0) rectangle (1.5,-1);
+                % \draw[thick, black, ->, line width=1mm] (-1.25,-0.5) -- (0.15,-0.5);
+                \draw[-stealth,  blue, line width=0.5mm] (-2.7,-1.8) arc  (80:275:0.5)node[below left]{\small$-45^\circ$};
+                \end{tikzpicture}
+                \subcaption{Inverse}
+            \end{minipage}
+            \caption[position=left]{Rotational compensation}
+            % {\hspace*{-2em}\caption{Rotationsstabilisierung}}
+            \label{fig:motionmodel:rota}
+        \end{figure}
+
+\subsection{Reframing}
+
+\section{Results and future work}
 
 
 
