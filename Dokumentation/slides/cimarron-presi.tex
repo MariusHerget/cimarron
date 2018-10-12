@@ -13,7 +13,12 @@
 
 
 
-\usepackage[backend=bibtex,style=numeric]{biblatex}
+\usepackage[natbib=true,style=authoryear,backend=bibtex,useprefix=true]{biblatex}
+\setbeamercolor*{bibliography entry title}{fg=black}
+\setbeamercolor*{bibliography entry location}{fg=black}
+\setbeamercolor*{bibliography entry note}{fg=black}
+\setbeamertemplate{bibliography item}{}
+\renewcommand*{\bibfont}{\scriptsize}
 \addbibresource{../lib/research.bib}
 
 \usepackage{ltablex} % mix out of tabularx and longtable
@@ -182,7 +187,7 @@
         \label{fig:motionmodels}
     \end{figure}
     % SMALL SD
-    \renewcommand{\currentSD}{\draw[red,thick,dotted] ($(analysis2.north west)+(-0.2,0.2)$)  rectangle ($(analysis2.south east)+(0.2,-0.2)$);}
+    \renewcommand{\currentSD}{\draw[red,thick,dotted] ($(analysis1.north west)+(-0.2,0.2)$)  rectangle ($(analysis2.south east)+(0.2,-0.2)$);}
     \input{./images/sd-mini}
 \end{frame}
 \note[itemize]{
@@ -193,15 +198,42 @@
 \frametitle{Bewegungserkennung}
     \begin{description}
         \item[Lokal] $\Delta(trackingVector(F(n-1)), trackingVectorF(n))$
-        \item[Global]
+        \item[Global] ~\\
+            \textbf{1.} Ähnlichkeitmass berechnen\\
+            \textbf{2.} Ueberpruefen ob genug Vekoren / Winkel aehnlich genug sind\\
+            \textbf{3.} Durchschnittswert der aehnlichen Faktoren berechnen und daraus Inverse bilden
+
     \end{description}
     % SMALL SD
     \renewcommand{\currentSD}{\draw[red,thick,dotted] ($(analysis2.north west)+(-0.2,0.4)$)  rectangle ($(analysis4.south east)+(0.2,-0.4)$);}
     \input{./images/sd-mini}
 \end{frame}
 
+
 \begin{frame}
-\frametitle{Stabilisierung Theorie}
+\frametitle{Ähnlichkeit}
+    \begin{description}
+        \item[Vektoren] Kosinus-Ähnlichkeit
+        \[cos\_sim = \frac{A \cdot B}{\Vert A\Vert \Vert B\Vert} = \frac{\sum\limits_{i=1}^{n} A_iB_i}{\sqrt{\sum\limits_{i=1}^{n}A_i^2} \sqrt{\sum\limits_{i=1}^{n}B_i^2}}\]
+        \item[Winkel] Prozentuale Veraenderung
+    \end{description}
+    % SMALL SD
+    \renewcommand{\currentSD}{\draw[red,thick,dotted] ($(analysis4.north west)+(-0.2,0.2)$)  rectangle ($(analysis4.south east)+(0.2,-0.2)$);}
+    \input{./images/sd-mini}
+\end{frame}
+\note[itemize]{
+    \item Kosinus-Ähnlichkeit ist ein Maß für die Ähnlichkeit zweier Vektoren
+    \item Kosinus des Winkels zwischen beiden Vektoren
+    \item 1:  Abhängigkeit // 0: Unabhängigkeit // -1: Exakt gegenteil
+    \item $[-1\leq cos\_sim \leq,1]$
+    \item  Attribut-Vektoren a {\displaystyle \mathbf {a} } \mathbf {a} und b {\displaystyle \mathbf {b} } \mathbf{b}
+    \item Der Kosinus zweier Vektoren bestimmt sich aus dem Standardskalarprodukt: $a\cdot b = \Vert A\Vert\Vert B\Vert cos \Theta$\\[1.5em]
+    \item $A \cdot B$ -> Skalarprodukt
+    \item $A \cdot B$ -> Norm:  Abbildung die dem Vektor eine Zahl zuordnet, die auf gewisse Weise die Größe des Objekts beschreiben soll
+}
+
+\begin{frame}
+\frametitle{Stabilisierung}
     \begin{figure}\centering
         \begin{minipage}{.45\textwidth}\centering
             \begin{tikzpicture}[scale=1]
@@ -217,7 +249,7 @@
             \begin{tikzpicture}[scale=1]
             \draw[step=0.5cm,gray,thin] (-3,-2) grid (2,1);
             \draw[black, fill = gray] (-2,-0.5) circle [radius=.5];
-            \draw[thick, blue, ->, line width=0.5mm] (-1.25,1.1) -- node[above]{\small$\overrightarrow{v} = (-6,0)$} (-2.75,1.1);
+            \draw[thick, blue, ->, line width=0.5mm] (-1.25,1.1) -- node[above]{\small$\overrightarrow{v}_{inverse} = (-6,0)$} (-2.75,1.1);
 
             \draw[step=0.5cm,blue,thin] (-5,-2) grid (-1,1);
             \draw[blue, pattern=dots] (-2,-0.5) circle [radius=.5];
@@ -235,7 +267,7 @@
 \end{frame}
 %
 \begin{frame}
-\frametitle{Stabilisierung Theorie}
+\frametitle{Stabilisierung}
 \vspace{-1.2em}
     \begin{figure}\centering
         \begin{minipage}{.4\textwidth}\centering
@@ -270,43 +302,42 @@
     \input{./images/sd-mini}
 \end{frame}
 
-\begin{frame}
-\frametitle{Ähnlichkeit}
-\begin{description}
-    \item[Vektoren] Kosinus-Ähnlichkeit
-    \[cos\_sim = \frac{A \cdot B}{\Vert A\Vert \Vert B\Vert} = \frac{\sum\limits_{i=1}^{n} A_iB_i}{\sqrt{\sum\limits_{i=1}^{n}A_i^2} \sqrt{\sum\limits_{i=1}^{n}B_i^2}}\]
-    \item[Winkel] Prozentuale Veraenderung
-\end{description}
-\end{frame}
-\note[itemize]{
-\item Kosinus-Ähnlichkeit ist ein Maß für die Ähnlichkeit zweier Vektoren
-\item Kosinus des Winkels zwischen beiden Vektoren
-\item 1:  Abhängigkeit // 0: Unabhängigkeit // -1: Exakt gegenteil
-\item $[-1\leq cos\_sim \leq,1]$
-\item  Attribut-Vektoren a {\displaystyle \mathbf {a} } \mathbf {a} und b {\displaystyle \mathbf {b} } \mathbf{b}
-\item Der Kosinus zweier Vektoren bestimmt sich aus dem Standardskalarprodukt: $a\cdot b = \Vert A\Vert\Vert B\Vert cos \Theta$\\[1.5em]
-\item $A \cdot B$ -> Skalarprodukt
-\item $A \cdot B$ -> Norm:  Abbildung die dem Vektor eine Zahl zuordnet, die auf gewisse Weise die Größe des Objekts beschreiben soll
-}
-
-\begin{frame}
-\frametitle{Berechnung Inverse}
-    \textbf{Vektoren}:
-    % \begin{enumerate}
-        % \item
-        Berechne die Cosine similarity von jedem Tracking window mit jedem anderen TrackingVector:
-        \[cos\_sim(\forall transVector(delta(f(n), f(n+1))) )\]
-    % \end{enumerate}
-\end{frame}
 
 \begin{frame}
 \frametitle{Konzepte}
+    \begin{columns}
+    \begin{column}{0.32\textwidth}\centering
+        test
+    \end{column}
+    \begin{column}{0.32\textwidth}\centering
+        test
+    \end{column}
+    \begin{column}{0.32\textwidth}\centering
+        test
+    \end{column}
+    \end{columns}
 \end{frame}
 
 \begin{frame}
 \frametitle{Konzeptdefinition}
 \end{frame}
 
+\begin{frame}
+\frametitle{Implementierung}
+\end{frame}
+
+\begin{frame}
+\frametitle{Zukunft}
+    \begin{description}
+        \item[Smoothing] Die Stabilisierung ist aktuell noch sehr harsch. Dies kann durch ein \textit{Smoothing} der globalen Delta Vektoren optimiert werden.
+        \item[Reframing] Es entstehen aktuell noch schwarze Raender, die bei der Stabilisierung genutzt werden. Druch eine Analyse welche Pixel immer belegt sind, kann das Video beschnitten werden, um eine bessere Nutzererfahrung zu bieten. Moeglich ist es auch, die enstehenden Raender automatisch mit Pixeln zu ergaenzen, um ein stimmiges Gesamtbild ohne \textit{Crop} zu erzeugen \cite{blockTang}.
+    \end{description}
+\end{frame}
+
+\begin{frame}%[allowframebreaks]
+\frametitle{Referenzen}
+    \printbibliography[heading=none]
+\end{frame}
 
 \begin{frame}
 \begin{center}
